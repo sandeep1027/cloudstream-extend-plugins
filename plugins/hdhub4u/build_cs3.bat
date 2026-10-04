@@ -67,19 +67,9 @@ copy /y "%ROOT%\plugins\%MODULE%\manifest.json" "!OUT!\manifest.json" >nul
 
 echo ==^> packaging .cs3
 pushd "!OUT!"
-powershell -NoProfile -Command ^
-  "Add-Type -AssemblyName System.IO.Compression.FileSystem;" ^
-  "$m = Get-Content manifest.json -Raw | ConvertFrom-Json;" ^
-  "$dexes = Get-ChildItem dex -Filter *.dex | Sort-Object Name;" ^
-  "$out = ($m.name -replace '\s', '') + '.cs3';" ^
-  "if (Test-Path $out) { Remove-Item $out };" ^
-  "$zip = [IO.Compression.ZipFile]::Open((Join-Path (Get-Location) $out), 'Create');" ^
-  "try { foreach ($d in $dexes) { [IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip, $d.FullName, $d.Name) | Out-Null }; [IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip, (Join-Path (Get-Location) 'manifest.json'), 'manifest.json') | Out-Null } finally { $zip.Dispose() };" ^
-  "$h = Get-FileHash $out -Algorithm SHA256;" ^
-  "Write-Output ('  dex: ' + ($dexes.Name -join ', '));" ^
-  "Write-Output ('  cs3: plugins/%MODULE%/build/cs3/' + $out);" ^
-  "Write-Output ('  \"fileSize\": \"' + (Get-Item $out).Length + '\",');" ^
-  "Write-Output ('  \"fileHash\": \"sha256-' + $h.Hash.ToLower() + '\"');"
+REM A script file, not a -Command one-liner: this statement list is long
+REM enough that cmd refuses to launch powershell for it.
+powershell -NoProfile -ExecutionPolicy Bypass -File "%ROOT%\tools\package_cs3.ps1" -Module "%MODULE%"
 set "RC=%ERRORLEVEL%"
 popd
 if not "%RC%"=="0" exit /b %RC%

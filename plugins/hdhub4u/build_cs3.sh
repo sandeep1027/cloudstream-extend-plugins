@@ -70,23 +70,7 @@ cp "plugins/$MODULE/manifest.json" "$OUT/manifest.json"
 
 echo "==> packaging .cs3"
 cd "$OUT"
-MODULE="$MODULE" python3 - <<'PY'
-import hashlib, json, os, zipfile
-
-name = json.load(open("manifest.json"))["name"]
-dexes = sorted(f for f in os.listdir("dex") if f.endswith(".dex"))
-cs3 = name.replace(" ", "") + ".cs3"
-with zipfile.ZipFile(cs3, "w", zipfile.ZIP_DEFLATED) as z:
-    for d in dexes:
-        z.write(os.path.join("dex", d), d)
-    z.write("manifest.json", "manifest.json")
-
-data = open(cs3, "rb").read()
-print("  dex:", ", ".join(dexes))
-print("  cs3: plugins/%s/build/cs3/%s" % (os.environ["MODULE"], cs3))
-print('  "fileSize": "%d",' % len(data))
-print('  "fileHash": "sha256-%s"' % hashlib.sha256(data).hexdigest())
-PY
+python3 "$REPO_ROOT/tools/package_cs3.py" "$MODULE"
 
 cd "$REPO_ROOT"
 echo "==> done: $OUT (copy the .cs3 into plugins/$MODULE/repo/ and update repo/plugins.json)"

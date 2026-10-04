@@ -78,6 +78,12 @@ Both scripts work in any module directory — they derive the module name from
 their own location and the archive name from `manifest.json`. Each prints the
 `fileSize` and sha256 `fileHash` to publish.
 
+Packaging is reproducible: `tools/package_cs3.py` and `tools/package_cs3.ps1` pin
+every field the zip format would otherwise copy from the filesystem, and write the
+same values .NET's `ZipArchive` does. Building the same sources twice gives you
+the same bytes and the same hash, on Windows and on the Linux runner alike, so a
+moved `fileHash` always means the code actually changed.
+
 ### Publishing a new build
 
 Tag the commit and let the workflow do it:
