@@ -1,24 +1,24 @@
 [
-    {
-        "url":  "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/bollyflix/repo/BollyFlix.cs3",
-        "status":  1,
-        "version":  "1",
-        "apiVersion":  1,
-        "name":  "BollyFlix",
-        "internalName":  "BollyFlix",
-        "authors":  [
-                        "Spyou",
-                        "rootx"
-                    ],
-        "description":  "BollyFlix (new.bollyflix.vote) catalogue: Bollywood, Hollywood, dual-audio, Hindi-dubbed and Korean movies and web series, with the per-title quality table (480p/720p/1080p/2160p with sizes). The site only publishes download links, so playback is resolved from the torrent layer through your Torrin / TorBox / Real-Debrid account (Settings \u003e Player \u003e Debrid).",
-        "repositoryUrl":  null,
-        "tvTypes":  [
-                        "Movie",
-                        "TvSeries"
-                    ],
-        "language":  "en",
-        "iconUrl":  null,
-        "fileSize":  "56664",
-        "fileHash":  "sha256-bfe7467a6ed4e8f4dd94b19b2f81f27062db28fdfea8d421ef5ca649c53d77b2"
-    }
+  {
+    "url": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/bollyflix/repo/BollyFlix.cs3",
+    "status": 1,
+    "version": "1",
+    "apiVersion": 1,
+    "name": "BollyFlix",
+    "internalName": "BollyFlix",
+    "authors": [
+      "Spyou",
+      "rootx"
+    ],
+    "description": "BollyFlix (new.bollyflix.vote) catalogue: Bollywood, Hollywood, dual-audio, Hindi-dubbed and Korean movies and web series, with the per-title quality table (480p/720p/1080p/2160p with sizes). The site only publishes download links, so playback is resolved from the torrent layer through your Torrin / TorBox / Real-Debrid account (Settings > Player > Debrid).",
+    "repositoryUrl": null,
+    "tvTypes": [
+      "Movie",
+      "TvSeries"
+    ],
+    "language": "en",
+    "iconUrl": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/bollyflix/repo/icon.png",
+    "fileSize": "56664",
+    "fileHash": "sha256-bfe7467a6ed4e8f4dd94b19b2f81f27062db28fdfea8d421ef5ca649c53d77b2"
+  }
 ]

@@ -3,6 +3,10 @@
 build/
 local.properties
 
+# Python tools under tools/
+__pycache__/
+*.pyc
+
 # CloudStream submodule (the library module is built from it)
 cloudstream/
 

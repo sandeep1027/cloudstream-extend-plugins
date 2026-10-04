@@ -27,6 +27,7 @@ import hashlib
 import json
 import os
 import pathlib
+import posixpath
 import subprocess
 import sys
 import zipfile
@@ -125,6 +126,25 @@ def check_module(name, base_url, branch):
     if not archive.is_file():
         problems.append("%s is missing" % archive.relative_to(ROOT))
         return problems
+
+    # An icon hosted in this repository is a path in plugins.json with no hash to
+    # back it up, so check the file it names actually exists and belongs to this
+    # module.
+    icon_url = entry.get("iconUrl")
+    if icon_url and "/plugins/" in icon_url:
+        icon_prefix = "%s/%s/plugins/" % (base_url, branch)
+        if not icon_url.startswith(icon_prefix):
+            problems.append("iconUrl %s does not start with %s" % (icon_url, icon_prefix))
+        else:
+            relative = "plugins/" + icon_url[len(icon_prefix):].split("?", 1)[0]
+            module_prefix = "plugins/%s/repo/" % name
+            # normpath first: without it a "../repo/icon.png" still starts with
+            # module_prefix and slips through.
+            normalised = posixpath.normpath(relative)
+            if not normalised.startswith(module_prefix):
+                problems.append("iconUrl %s is not inside %s" % (relative, module_prefix))
+            elif not (ROOT / normalised).is_file():
+                problems.append("iconUrl points at missing file %s" % relative)
 
     if entry.get("fileSize") != str(archive.stat().st_size):
         problems.append(

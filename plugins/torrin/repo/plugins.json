@@ -1,23 +1,23 @@
 [
-    {
-        "url":  "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/torrin/repo/Torrin.cs3",
-        "status":  1,
-        "version":  "10",
-        "apiVersion":  1,
-        "name":  "Torrin",
-        "internalName":  "Torrin",
-        "authors":  [
-                        "rootx"
-                    ],
-        "description":  "Curated dashboard + latest releases from Netflix, Hotstar, ZEE5 \u0026 SonyLIV (TMDB, region IN). Resolves any title to torrents (Torrentio) and streams them through your Torrin debrid. Enable Torrin in Settings \u003e Player first.",
-        "repositoryUrl":  null,
-        "tvTypes":  [
-                        "Movie",
-                        "TvSeries"
-                    ],
-        "language":  "en",
-        "iconUrl":  null,
-        "fileSize":  "56962",
-        "fileHash":  "sha256-b02e919bc0824b9b6f9c2ab52d1712008aa23d78894ef16827c912e5cdbf5df6"
-    }
+  {
+    "url": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/torrin/repo/Torrin.cs3",
+    "status": 1,
+    "version": "10",
+    "apiVersion": 1,
+    "name": "Torrin",
+    "internalName": "Torrin",
+    "authors": [
+      "rootx"
+    ],
+    "description": "Curated dashboard + latest releases from Netflix, Hotstar, ZEE5 & SonyLIV (TMDB, region IN). Resolves any title to torrents (Torrentio) and streams them through your Torrin debrid. Enable Torrin in Settings > Player first.",
+    "repositoryUrl": null,
+    "tvTypes": [
+      "Movie",
+      "TvSeries"
+    ],
+    "language": "en",
+    "iconUrl": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/torrin/repo/icon.png",
+    "fileSize": "56962",
+    "fileHash": "sha256-b02e919bc0824b9b6f9c2ab52d1712008aa23d78894ef16827c912e5cdbf5df6"
+  }
 ]

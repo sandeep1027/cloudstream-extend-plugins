@@ -1,23 +1,23 @@
 [
-    {
-        "url":  "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/torrin-trakt/repo/TorrinTrakt.cs3",
-        "status":  1,
-        "version":  "2",
-        "apiVersion":  1,
-        "name":  "Torrin Trakt",
-        "internalName":  "Torrin Trakt",
-        "authors":  [
-                        "rootx"
-                    ],
-        "description":  "Latest movies \u0026 this-week episodes from the Trakt calendar (free client id, Settings \u003e Player \u003e Metadata) plus curated trending rows. Streams via Torrin and TorBox debrid ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â pick the debrid per link.",
-        "repositoryUrl":  null,
-        "tvTypes":  [
-                        "Movie",
-                        "TvSeries"
-                    ],
-        "language":  "en",
-        "iconUrl":  null,
-        "fileSize":  "55597",
-        "fileHash":  "sha256-1739c7104e29822d911bcf7a978c000953be2181f09ad1568057696f68af724c"
-    }
+  {
+    "url": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/torrin-trakt/repo/TorrinTrakt.cs3",
+    "status": 1,
+    "version": "2",
+    "apiVersion": 1,
+    "name": "Torrin Trakt",
+    "internalName": "Torrin Trakt",
+    "authors": [
+      "rootx"
+    ],
+    "description": "Latest movies & this-week episodes from the Trakt calendar (free client id, Settings > Player > Metadata) plus curated trending rows. Streams via Torrin and TorBox debrid ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â pick the debrid per link.",
+    "repositoryUrl": null,
+    "tvTypes": [
+      "Movie",
+      "TvSeries"
+    ],
+    "language": "en",
+    "iconUrl": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/torrin-trakt/repo/icon.png",
+    "fileSize": "55597",
+    "fileHash": "sha256-1739c7104e29822d911bcf7a978c000953be2181f09ad1568057696f68af724c"
+  }
 ]

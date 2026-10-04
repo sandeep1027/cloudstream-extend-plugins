@@ -3,6 +3,7 @@
 *.sh text eol=lf
 gradlew text eol=lf
 tools/*.py text eol=lf
+*.ps1 text eol=lf
 *.yml text eol=lf
 *.yaml text eol=lf
 

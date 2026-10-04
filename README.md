@@ -36,6 +36,11 @@ bottom of Home and pick the one you want. Home also filters by content type, and
 only **Movies** and **TV Series** are selected by default, so the anime-only
 sources (HiAnime, AniKoto, AnimeCube) need the **Anime** chip enabled.
 
+Each plugin has an icon in Settings → Extensions, served from
+`plugins/<module>/repo/icon.png` through the `iconUrl` in that plugin's
+`plugins.json`. There are no real logos to use, so they are initials on a colour:
+regenerate them with `powershell -NoProfile -File tools/make_plugin_icons.ps1`.
+
 ## Plugins
 
 | Module | Source | What it does |
