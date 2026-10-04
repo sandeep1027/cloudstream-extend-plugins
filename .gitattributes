@@ -1,0 +1,10 @@
+# The publish workflow runs these on Linux, where a stray carriage return turns
+# every line into a "\r: command not found" error.
+*.sh text eol=lf
+gradlew text eol=lf
+tools/*.py text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# Windows batch files need CRLF to run at all.
+*.bat text eol=crlf

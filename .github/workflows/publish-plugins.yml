@@ -1,0 +1,137 @@
+name: Publish plugins
+
+# Tag a commit (v1.4.0, v2, ...) to build every published plugin, publish the
+# .cs3 files back to the serving branch and attach them to a GitHub release.
+# Manual runs publish without needing a tag.
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      modules:
+        description: "Modules to publish, comma separated (blank = every published plugin)"
+        required: false
+        default: ""
+      bump:
+        description: "Version bump for the published plugins"
+        type: choice
+        options:
+          - patch
+          - none
+        default: patch
+      branch:
+        description: "Branch the published URLs point at"
+        required: false
+        default: main
+      commit:
+        description: "Commit the built .cs3 files back to that branch"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+# Two runs publishing at once would clobber each other's manifests.
+concurrency:
+  group: publish-plugins
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Build and publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out the sources
+        uses: actions/checkout@v4
+        with:
+          # The plugins compile against the app's :library module, which lives in
+          # the cloudstream submodule.
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Restore the executable bit on the wrapper
+        # gradlew is committed without it (Windows checkout), so a fresh Linux
+        # clone cannot run it.
+        run: chmod +x gradlew
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: gradle-${{ runner.os }}-
+
+      - name: Set up the Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install the SDK packages the build needs
+        run: |
+          yes | sdkmanager --licenses >/dev/null
+          # compileSdk and the d8 in build_cs3.sh both come from here; see
+          # cloudstream/gradle/libs.versions.toml.
+          sdkmanager "platforms;android-37.0" "build-tools;37.0.0"
+
+      - name: Resolve the inputs
+        run: |
+          echo "MODULES=${{ inputs.modules }}" >> "$GITHUB_ENV"
+          echo "BUMP=${{ inputs.bump || 'patch' }}" >> "$GITHUB_ENV"
+          echo "BRANCH=${{ inputs.branch || 'main' }}" >> "$GITHUB_ENV"
+          echo "VERSION=${{ github.ref_name }}" >> "$GITHUB_ENV"
+          # A tag run has no inputs at all, and comparing that empty value against
+          # false in an `if:` does not mean what it looks like, so decide here.
+          if [ "${{ inputs.commit }}" = "false" ]; then
+            echo "COMMIT=false" >> "$GITHUB_ENV"
+          else
+            echo "COMMIT=true" >> "$GITHUB_ENV"
+          fi
+
+      - name: Publish on top of the latest ${{ inputs.branch || 'main' }}
+        if: github.event_name == 'push'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # The tag is usually a few commits behind main; building on top of main
+          # keeps the published branch a fast forward.
+          git fetch origin "$BRANCH"
+          git rebase "origin/$BRANCH"
+
+      - name: Build, bump and publish
+        run: |
+          set -- 
+          if [ -n "$MODULES" ]; then set -- --modules "$MODULES"; fi
+          python3 tools/publish_plugins.py --bump "$BUMP" --branch "$BRANCH" "$@"
+
+      - name: Commit the published builds
+        if: env.COMMIT == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add plugins/*/manifest.json plugins/*/repo
+          if git diff --cached --quiet; then
+            echo "nothing changed, nothing to publish"
+            exit 0
+          fi
+          git commit -m "Publish plugins for $VERSION"
+          git push origin "HEAD:$BRANCH"
+
+      - name: Attach the builds to the release
+        if: github.event_name == 'push' && env.COMMIT == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if gh release view "$VERSION" >/dev/null 2>&1; then
+            gh release upload "$VERSION" --clobber plugins/*/repo/*.cs3
+          else
+            gh release create "$VERSION" --title "Plugins $VERSION" --generate-notes plugins/*/repo/*.cs3
+          fi

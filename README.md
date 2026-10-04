@@ -80,12 +80,44 @@ their own location and the archive name from `manifest.json`. Each prints the
 
 ### Publishing a new build
 
-1. Run the module's `build_cs3` script.
-2. Copy `build/cs3/<Name>.cs3` into `plugins/<module>/repo/`.
-3. Copy the printed `fileSize` / `fileHash` into `plugins/<module>/repo/plugins.json`.
-4. Commit and push. Users get the update on the next plugin sync.
+Tag the commit and let the workflow do it:
 
-The app verifies every download against that hash, so steps 2–3 must ship together.
+```bash
+git tag v1.2.0 && git push origin v1.2.0
+```
+
+`.github/workflows/publish-plugins.yml` builds every published plugin, bumps each
+version, copies the `.cs3` files into `plugins/<module>/repo/`, rewrites
+`repo/plugins.json` with the matching `fileSize`/`fileHash`, commits the result to
+`main` and attaches the archives to a GitHub release. The same script runs by
+hand from Actions → Publish plugins, where you can publish a subset
+(`hianime,anikoto`) or point the published URLs at another branch.
+
+The version bump is the part that matters. The app replaces an installed plugin
+only when `plugins.json` advertises a higher version than the one recorded inside
+the `.cs3`, so a rebuild published with the same version leaves users on the build
+they already have. `tools/publish_plugins.py` bumps `manifest.json` before
+compiling (so the number is baked into the archive), copies the same number into
+`repo/plugins.json`, and refuses to finish if the two ever disagree.
+
+To do it by hand instead:
+
+```bash
+tools/publish_plugins.py                       # every published plugin
+tools/publish_plugins.py --modules hianime     # just one
+tools/publish_plugins.py --check               # verify what is published, change nothing
+```
+
+`--check` is the useful one after editing a manifest by hand: it confirms each
+`repo/plugins.json` is still a JSON array, that the URL points at the archive next
+to it, that `fileSize` and `fileHash` match the bytes on disk, and that the version
+inside the `.cs3` matches the version advertised. The app verifies every download
+against that hash, so a `.cs3` and a manifest must always ship together.
+
+If you prefer the raw steps: run the module's `build_cs3` script, copy
+`build/cs3/<Name>.cs3` into `plugins/<module>/repo/`, bump the version in both
+`manifest.json` and `repo/plugins.json`, and copy the printed `fileSize` /
+`fileHash` into `repo/plugins.json`.
 
 ## Testing without publishing
 

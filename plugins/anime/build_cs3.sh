@@ -10,6 +10,9 @@
 # The same script works in every plugins/<module> directory: it derives the
 # repository root and module name from its own location and the .cs3 file name
 # from manifest.json. On Windows use build_cs3.bat instead.
+#
+# Set CS3_SKIP_COMPILE=1 to package a jar that is already built (see
+# tools/publish_plugins.py, which compiles every module in one Gradle run).
 set -euo pipefail
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
@@ -37,10 +40,16 @@ export ANDROID_HOME
 cd "$REPO_ROOT"
 echo "==> module: plugins/$MODULE"
 
-echo "==> Compiling plugin module"
-# drop stale jars (e.g. from a previous module name) so we never dex the wrong one
-rm -rf "plugins/$MODULE/build/libs"
-./gradlew ":plugins:$MODULE:jar" -q
+# CS3_SKIP_COMPILE=1 packages an already built jar. tools/publish_plugins.py sets it
+# so every module is compiled in a single Gradle run instead of one run per module.
+if [ "${CS3_SKIP_COMPILE:-0}" = "1" ]; then
+  echo "==> Compiling plugin module (skipped: CS3_SKIP_COMPILE=1)"
+else
+  echo "==> Compiling plugin module"
+  # drop stale jars (e.g. from a previous module name) so we never dex the wrong one
+  rm -rf "plugins/$MODULE/build/libs"
+  ./gradlew ":plugins:$MODULE:jar" -q
+fi
 
 BT="$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)"
 API="$(ls "$ANDROID_HOME/platforms" | sed 's/^android-//' | sort -n | tail -1)"
