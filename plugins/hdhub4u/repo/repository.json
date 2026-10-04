@@ -1,7 +1,7 @@
 {
     "iconUrl":  null,
     "name":  "HDHub4u",
-    "description":  "HDHub4u for CloudStream ",
+    "description":  "HDHub4u movies and series (Hindi/Hollywood): home rows, search, episodes, streams through the site link-bypass hops.",
     "manifestVersion":  1,
     "pluginLists":  [
                         "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/hdhub4u/repo/plugins.json"

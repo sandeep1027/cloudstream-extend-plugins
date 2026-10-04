@@ -1,7 +1,7 @@
 {
     "iconUrl":  null,
     "name":  "HiAnime",
-    "description":  "HiAnime (hianime.at) for CloudStream ",
+    "description":  "HiAnime (hianime.at) anime source: home rows, search, detail with sub \u0026 dub episode lists, streams via VidPlay/MegaPlay getSources and Zoko player blobs.",
     "manifestVersion":  1,
     "pluginLists":  [
                         "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/hianime/repo/plugins.json"

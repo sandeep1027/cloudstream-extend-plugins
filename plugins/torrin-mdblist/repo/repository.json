@@ -1,7 +1,7 @@
 {
     "iconUrl":  null,
-    "name":  "Torrin MDBList Extensions",
-    "description":  "MDBList latest releases dashboard + Torrin/TorBox debrid playback for CloudStream",
+    "name":  "Torrin MDBList",
+    "description":  "\"Latest Movies\" / \"Latest Shows\" rows from the MDBList catalog plus trending rows, with Torrin/TorBox debrid playback.",
     "manifestVersion":  1,
     "pluginLists":  [
                         "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/torrin-mdblist/repo/plugins.json"

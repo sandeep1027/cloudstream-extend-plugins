@@ -1,7 +1,7 @@
 {
     "iconUrl":  null,
     "name":  "YTS",
-    "description":  "YTS movies and TV shows (720p / 1080p / 2160p) for CloudStream Ã¢â‚¬â€ playback resolved through your Torrin / TorBox / Real-Debrid account",
+    "description":  "YTS movies and shows with rows per streaming service (Netflix, Prime Video, Disney+, Max, Hulu), This Week / Today and Indian rows. Every link is a magnet for your debrid account.",
     "manifestVersion":  1,
     "pluginLists":  [
                         "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/yts/repo/plugins.json"

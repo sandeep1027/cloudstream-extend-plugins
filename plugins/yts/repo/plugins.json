@@ -1,21 +1,23 @@
-{
-    "url":  "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/yts/repo/YTS.cs3",
-    "status":  1,
-    "version":  "1",
-    "apiVersion":  1,
-    "name":  "YTS",
-    "internalName":  "YTS",
-    "authors":  [
-                    "rootx"
-                ],
-    "description":  "YTS movies and TV shows with full quality tiers (720p / 1080p / 2160p), seeders and sizes. Every link is a magnet, so playback is resolved through your Torrin / TorBox / Real-Debrid account (Settings \u003e Player \u003e Debrid). Sites in this family move domains often, so this plugin is standalone and can be pointed at a new mirror without touching the others.",
-    "repositoryUrl":  null,
-    "tvTypes":  [
-                    "Movie",
-                    "TvSeries"
-                ],
-    "language":  "en",
-    "iconUrl":  null,
-    "fileSize":  "57353",
-    "fileHash":  "sha256-afe100d3ae15ce3d92dff7485617079dfb91fd79d2ba285c4170ab7826d4d815"
-}
+[
+    {
+        "url":  "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/yts/repo/YTS.cs3",
+        "status":  1,
+        "version":  "1",
+        "apiVersion":  1,
+        "name":  "YTS",
+        "internalName":  "YTS",
+        "authors":  [
+                        "rootx"
+                    ],
+        "description":  "YTS movies and TV shows with full quality tiers (720p / 1080p / 2160p), seeders and sizes. Every link is a magnet, so playback is resolved through your Torrin / TorBox / Real-Debrid account (Settings \u003e Player \u003e Debrid). Sites in this family move domains often, so this plugin is standalone and can be pointed at a new mirror without touching the others.",
+        "repositoryUrl":  null,
+        "tvTypes":  [
+                        "Movie",
+                        "TvSeries"
+                    ],
+        "language":  "en",
+        "iconUrl":  null,
+        "fileSize":  "57353",
+        "fileHash":  "sha256-afe100d3ae15ce3d92dff7485617079dfb91fd79d2ba285c4170ab7826d4d815"
+    }
+]

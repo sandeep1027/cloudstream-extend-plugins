@@ -1,7 +1,7 @@
 {
     "iconUrl":  null,
-    "name":  "Torrin Trakt Extensions",
-    "description":  "Trakt calendar latest releases dashboard + Torrin/TorBox debrid playback for CloudStream",
+    "name":  "Torrin Trakt",
+    "description":  "\"Latest Movies\" / \"Latest Episodes\" rows from the public Trakt calendar plus trending rows, with Torrin/TorBox debrid playback.",
     "manifestVersion":  1,
     "pluginLists":  [
                         "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/torrin-trakt/repo/plugins.json"

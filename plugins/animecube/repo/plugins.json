@@ -1,21 +1,23 @@
-{
-    "url":  "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/animecube/repo/AnimeCube.cs3",
-    "status":  1,
-    "version":  "1",
-    "apiVersion":  1,
-    "name":  "AnimeCube",
-    "internalName":  "AnimeCube",
-    "authors":  [
-                    "Spyou",
-                    "rootx"
-                ],
-    "description":  "AnimeCube (animecube.live) anime source. Listings and episodes read from the site\u0027s Next.js payload; streams from the site\u0027s sources endpoint, with Dailymotion and Rumble playlists expanded into direct HLS/MP4 links.",
-    "repositoryUrl":  null,
-    "tvTypes":  [
-                    "Anime"
-                ],
-    "language":  "zh",
-    "iconUrl":  null,
-    "fileSize":  "43575",
-    "fileHash":  "sha256-a1eb35630bbb6c0067ce29f44cb16e2bd3922797aca1dfa7baebf25a6e5e4c97"
-}
+[
+    {
+        "url":  "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/animecube/repo/AnimeCube.cs3",
+        "status":  1,
+        "version":  "1",
+        "apiVersion":  1,
+        "name":  "AnimeCube",
+        "internalName":  "AnimeCube",
+        "authors":  [
+                        "Spyou",
+                        "rootx"
+                    ],
+        "description":  "AnimeCube (animecube.live) anime source. Listings and episodes read from the site\u0027s Next.js payload; streams from the site\u0027s sources endpoint, with Dailymotion and Rumble playlists expanded into direct HLS/MP4 links.",
+        "repositoryUrl":  null,
+        "tvTypes":  [
+                        "Anime"
+                    ],
+        "language":  "zh",
+        "iconUrl":  null,
+        "fileSize":  "43575",
+        "fileHash":  "sha256-a1eb35630bbb6c0067ce29f44cb16e2bd3922797aca1dfa7baebf25a6e5e4c97"
+    }
+]

@@ -1,21 +1,23 @@
-{
-    "url":  "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/hianime/repo/HiAnime.cs3",
-    "status":  1,
-    "version":  "1",
-    "apiVersion":  1,
-    "name":  "HiAnime",
-    "internalName":  "HiAnime",
-    "authors":  [
-                    "Spyou",
-                    "rootx"
-                ],
-    "description":  "HiAnime (hianime.at) anime source. Server-rendered search, home rows and detail with sub \u0026 dub episode lists; resolves VidPlay/MegaPlay getSources and Zoko\u0027s XOR\u0027d player blob into m3u8/MP4 links with subtitles.",
-    "repositoryUrl":  null,
-    "tvTypes":  [
-                    "Anime"
-                ],
-    "language":  "en",
-    "iconUrl":  null,
-    "fileSize":  "42241",
-    "fileHash":  "sha256-016a98dc745f46373bcb07b816cb01dde7303129bae19702047366d112ce70b2"
-}
+[
+    {
+        "url":  "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/hianime/repo/HiAnime.cs3",
+        "status":  1,
+        "version":  "1",
+        "apiVersion":  1,
+        "name":  "HiAnime",
+        "internalName":  "HiAnime",
+        "authors":  [
+                        "Spyou",
+                        "rootx"
+                    ],
+        "description":  "HiAnime (hianime.at) anime source. Server-rendered search, home rows and detail with sub \u0026 dub episode lists; resolves VidPlay/MegaPlay getSources and Zoko\u0027s XOR\u0027d player blob into m3u8/MP4 links with subtitles.",
+        "repositoryUrl":  null,
+        "tvTypes":  [
+                        "Anime"
+                    ],
+        "language":  "en",
+        "iconUrl":  null,
+        "fileSize":  "42241",
+        "fileHash":  "sha256-016a98dc745f46373bcb07b816cb01dde7303129bae19702047366d112ce70b2"
+    }
+]

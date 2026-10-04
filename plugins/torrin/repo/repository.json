@@ -1,7 +1,7 @@
 {
     "iconUrl":  null,
-    "name":  "Torrin Extensions",
-    "description":  "Torrent-powered dashboard + Torrin debrid playback for CloudStream",
+    "name":  "Torrin",
+    "description":  "Curated dashboard and \"Latest on Netflix / Hotstar / ZEE5 / SonyLIV\" rows for Indian content (TMDB), with playback routed through the debrid layer.",
     "manifestVersion":  1,
     "pluginLists":  [
                         "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/torrin/repo/plugins.json"
