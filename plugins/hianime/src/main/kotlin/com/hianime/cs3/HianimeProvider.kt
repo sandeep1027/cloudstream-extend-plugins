@@ -36,7 +36,6 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull
-import okhttp3.Interceptor
 
 // ── Api payloads ─────────────────────────────────────────────────────────────
 
@@ -342,26 +341,6 @@ class HianimeProvider : MainAPI() {
     }
 
     // ------------------------------------------------------------- loadLinks
-
-    /**
-     * The player defaults to Cronet, which does not reliably carry the referer
-     * these embed hosts insist on — the CDN answers 403 without it. Handing back
-     * an interceptor moves playback onto the OkHttp data source, which does send
-     * it. Header values are applied with `header()`, so they replace rather than
-     * duplicate what the data source already set.
-     */
-    override fun getVideoInterceptor(extractorLink: ExtractorLink): Interceptor? =
-        Interceptor { chain ->
-            val request = chain.request().newBuilder()
-                .apply {
-                    extractorLink.referer
-                        .takeIf { it.isNotBlank() }
-                        ?.let { header("Referer", it) }
-                    extractorLink.headers.forEach { (name, value) -> header(name, value) }
-                }
-                .build()
-            chain.proceed(request)
-        }
 
     /**
      * Episode data is `"hianime|<cat>|<epId>"`. Everything downstream of it (the

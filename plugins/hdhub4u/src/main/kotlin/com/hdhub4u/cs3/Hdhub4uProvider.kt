@@ -41,7 +41,6 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.contentOrNull
-import okhttp3.Interceptor
 import kotlinx.serialization.json.jsonPrimitive
 import java.net.URLEncoder
 import javax.crypto.Cipher
@@ -444,25 +443,6 @@ class Hdhub4uProvider : MainAPI() {
      * request: the landing pages and the redirect blob are re-issued constantly
      * and a cached hop is a dead hop.
      */
-    /**
-     * The player defaults to Cronet, which does not reliably carry the referer
-     * these hosts insist on â€” the CDN answers 403 without it. Handing back an
-     * interceptor moves playback onto the OkHttp data source, which does send
-     * it. Header values are applied with `header()`, so they replace rather than
-     * duplicate what the data source already set.
-     */
-    override fun getVideoInterceptor(extractorLink: ExtractorLink): Interceptor? =
-        Interceptor { chain ->
-            val request = chain.request().newBuilder()
-                .apply {
-                    extractorLink.referer
-                        .takeIf { it.isNotBlank() }
-                        ?.let { header("Referer", it) }
-                    extractorLink.headers.forEach { (name, value) -> header(name, value) }
-                }
-                .build()
-            chain.proceed(request)
-        }
     override suspend fun loadLinks(
         data: String,
         isCasting: Boolean,
