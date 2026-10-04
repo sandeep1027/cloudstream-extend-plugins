@@ -32,9 +32,12 @@ resolved through your **Torrin / TorBox / Real-Debrid** account (Settings → Pl
 Settings → Player → Metadata.
 
 Home rows are shown for **one provider at a time** — tap the provider chip at the
-bottom of Home and pick the one you want. Home also filters by content type, and
-only **Movies** and **TV Series** are selected by default, so the anime-only
-sources (HiAnime, AniKoto, AnimeCube) need the **Anime** chip enabled.
+bottom of Home and pick the one you want. The chips in that picker decide which
+providers it lists at all: a source that only serves a type you have not selected
+is hidden. **Movies**, **TV Series** and **Anime** are selected by default, which
+covers the anime-only sources (HiAnime, AniKoto, AnimeCube); enable more chips
+there if you install something else. The chips filter the picker, not the rows a
+provider returns.
 
 Each plugin has an icon in Settings → Extensions, served from
 `plugins/<module>/repo/icon.png` through the `iconUrl` in that plugin's
