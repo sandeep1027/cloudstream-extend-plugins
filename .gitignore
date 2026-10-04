@@ -1,0 +1,16 @@
+# Gradle
+.gradle/
+build/
+local.properties
+
+# CloudStream submodule (the library module is built from it)
+cloudstream/
+
+# Android
+*.apk
+*.aab
+
+# IDE
+.idea/
+*.iml
+.DS_Store

@@ -1,0 +1,6 @@
+{
+  "name": "AniKoto",
+  "pluginClassName": "com.anikoto.cs3.AnikotoPlugin",
+  "requiresResources": false,
+  "version": "1"
+}

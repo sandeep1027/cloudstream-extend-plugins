@@ -1,0 +1,6 @@
+{
+  "name": "AnimeCube",
+  "pluginClassName": "com.animecube.cs3.AnimecubePlugin",
+  "requiresResources": false,
+  "version": "1"
+}

@@ -1,0 +1,6 @@
+{
+  "name": "HiAnime",
+  "pluginClassName": "com.hianime.cs3.HianimePlugin",
+  "requiresResources": false,
+  "version": "1"
+}

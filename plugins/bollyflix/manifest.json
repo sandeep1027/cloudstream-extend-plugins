@@ -1,0 +1,6 @@
+{
+  "name": "BollyFlix",
+  "pluginClassName": "com.bollyflix.cs3.BollyflixPlugin",
+  "requiresResources": false,
+  "version": "1"
+}

@@ -1,0 +1,9 @@
+{
+    "iconUrl":  null,
+    "name":  "HiAnime",
+    "description":  "HiAnime (hianime.at) for CloudStream ",
+    "manifestVersion":  1,
+    "pluginLists":  [
+                        "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/hianime/repo/plugins.json"
+                    ]
+}

@@ -1,0 +1,6 @@
+{
+  "name": "Torrin MDBList",
+  "pluginClassName": "com.torrin.mdblist.MdblistPlugin",
+  "requiresResources": false,
+  "version": "1"
+}

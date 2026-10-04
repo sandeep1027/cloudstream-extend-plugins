@@ -1,0 +1,9 @@
+{
+    "iconUrl":  null,
+    "name":  "AnimeCube",
+    "description":  "AnimeCube (animecube.live) for CloudStream ",
+    "manifestVersion":  1,
+    "pluginLists":  [
+                        "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/animecube/repo/plugins.json"
+                    ]
+}

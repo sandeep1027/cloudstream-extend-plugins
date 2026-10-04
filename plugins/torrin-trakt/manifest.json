@@ -1,0 +1,6 @@
+{
+  "name": "Torrin Trakt",
+  "pluginClassName": "com.torrin.trakt.TraktPlugin",
+  "requiresResources": false,
+  "version": "2"
+}

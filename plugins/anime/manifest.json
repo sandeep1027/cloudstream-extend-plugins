@@ -1,0 +1,6 @@
+{
+  "name": "Anime",
+  "pluginClassName": "com.anime.cs3.AnimePlugin",
+  "requiresResources": false,
+  "version": "1"
+}

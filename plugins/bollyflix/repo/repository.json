@@ -1,0 +1,9 @@
+{
+    "iconUrl":  null,
+    "name":  "BollyFlix",
+    "description":  "BollyFlix catalogue (Bollywood, Hollywood, dual audio, Korean) for CloudStream Ã¢â‚¬â€ browse and search, playback through your Torrin / TorBox / Real-Debrid account",
+    "manifestVersion":  1,
+    "pluginLists":  [
+                        "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/bollyflix/repo/plugins.json"
+                    ]
+}

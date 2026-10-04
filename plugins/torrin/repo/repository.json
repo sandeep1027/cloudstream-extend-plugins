@@ -1,0 +1,9 @@
+{
+    "iconUrl":  null,
+    "name":  "Torrin Extensions",
+    "description":  "Torrent-powered dashboard + Torrin debrid playback for CloudStream",
+    "manifestVersion":  1,
+    "pluginLists":  [
+                        "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/torrin/repo/plugins.json"
+                    ]
+}

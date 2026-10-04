@@ -1,0 +1,22 @@
+{
+    "url":  "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/hdhub4u/repo/HDHub4u.cs3",
+    "status":  1,
+    "version":  "1",
+    "apiVersion":  1,
+    "name":  "HDHub4u",
+    "internalName":  "HDHub4u",
+    "authors":  [
+                    "Spyou",
+                    "rootx"
+                ],
+    "description":  "HDHub4u movies and series source (Hindi/Hollywood). Search, detail with episodes, and stream extraction through the site\u0027s shortener/link-bypass hops into direct m3u8/MP4 links.",
+    "repositoryUrl":  null,
+    "tvTypes":  [
+                    "Movie",
+                    "TvSeries"
+                ],
+    "language":  "en",
+    "iconUrl":  null,
+    "fileSize":  "67574",
+    "fileHash":  "sha256-7416e9b91a5d9915f7afe60cfe80a5b4c23a95905bacab959948c62f29b351d9"
+}

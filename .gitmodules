@@ -1,0 +1,3 @@
+[submodule "cloudstream"]
+	path = cloudstream
+	url = https://github.com/sandeep1027/cloudstream-extend

@@ -1,0 +1,6 @@
+{
+  "name": "YTS",
+  "pluginClassName": "com.yts.cs3.YtsPlugin",
+  "requiresResources": false,
+  "version": "1"
+}
