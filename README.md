@@ -52,9 +52,10 @@ sources (HiAnime, AniKoto, AnimeCube) need the **Anime** chip enabled.
 | `plugins/anime` | AniList | AniList catalogue (source only — not published as a repository). |
 
 Playback note: many of these hosts answer `403` unless the request carries the
-embed's `Referer`, and the player's default HTTP stack (Cronet) drops it. Those
-providers return an OkHttp `Interceptor` from `getVideoInterceptor`, which moves
-playback onto the data source that does send it.
+embed's `Referer`, and the player's default HTTP stack (Cronet) drops it. The app
+handles that centrally: an `ExtractorLink` with a referer is loaded over the
+OkHttp data source, which sends it. Plugins only set `referer` on the link and do
+not need a `getVideoInterceptor` of their own.
 
 ## Building
 
