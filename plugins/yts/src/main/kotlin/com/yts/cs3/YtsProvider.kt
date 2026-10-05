@@ -431,12 +431,47 @@ class YtsProvider : MainAPI() {
         if (title.isBlank()) return emptyList()
         val key = "$mode|$title|${year ?: ""}"
         torrentCache.get(key)?.let { return it }
-        val url = "$mainUrl/?api=torrents&mode=$mode&name=${encode(title)}&year=${year ?: ""}&quality=all"
-        val text = getJson(url) ?: return emptyList()
-        val hits = runCatching { AppUtils.parseJson<YtsTorrents>(text) }.getOrNull()?.hits.orEmpty()
-            .filter { !it.hash.isNullOrBlank() }
+
+        var hits = queryTorrents(mode, title, year)
+        if (hits.isEmpty()) {
+            // The site's torrent search is a phrase match against release names, so a
+            // metadata title often matches nothing at all: "K.G.F: Chapter 3" finds
+            // no releases while "KGF" finds them. Retry with looser forms of the same
+            // title, keeping only releases that actually mention the stem so a
+            // different film cannot slip in.
+            for (looser in looserTitles(title)) {
+                val found = queryTorrents(mode, looser, year)
+                    .filter { it.title.orEmpty().contains(looser, ignoreCase = true) }
+                if (found.isNotEmpty()) {
+                    hits = found
+                    break
+                }
+            }
+        }
+
         torrentCache.put(key, hits)
         return hits
+    }
+
+    private suspend fun queryTorrents(mode: String, name: String, year: Int?): List<YtsHit> {
+        val url = "$mainUrl/?api=torrents&mode=$mode&name=${encode(name)}&year=${year ?: ""}&quality=all"
+        val text = getJson(url) ?: return emptyList()
+        return runCatching { AppUtils.parseJson<YtsTorrents>(text) }.getOrNull()?.hits.orEmpty()
+            .filter { !it.hash.isNullOrBlank() }
+    }
+
+    /**
+     * Progressively looser spellings of [title] for the site's phrase match: the part
+     * before a subtitle separator, punctuation removed, then the first word.
+     */
+    private fun looserTitles(title: String): List<String> {
+        val squash = { text: String -> Regex("[^A-Za-z0-9]+").replace(text, "") }
+        val stem = title.split(':', '-', limit = 2).first().trim()
+        val firstWord = title.trim().split(' ', limit = 2).first().trim()
+        return listOf(stem, firstWord)
+            .map(squash)
+            .filter { it.length >= 3 && !it.equals(squash(title.trim()), ignoreCase = true) }
+            .distinct()
     }
 
     private suspend fun fetchTvDetails(tmdbId: Int): YtsTvDetails? {
