@@ -72,14 +72,12 @@ jobs:
           key: gradle-${{ runner.os }}-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
           restore-keys: gradle-${{ runner.os }}-
 
-      - name: Set up the Android SDK
-        uses: android-actions/setup-android@v3
-
       - name: Install the SDK packages the build needs
+        # ubuntu-latest already ships an Android SDK with its licences accepted, so
+        # there is nothing to set up: the setup-android action runs "sdkmanager
+        # tools", and that package no longer exists in the SDK repository, which
+        # fails the run before it starts.
         run: |
-          yes | sdkmanager --licenses >/dev/null
-          # compileSdk and the d8 in build_cs3.sh both come from here; see
-          # cloudstream/gradle/libs.versions.toml.
           sdkmanager "platforms;android-37.0" "build-tools;37.0.0"
 
       - name: Resolve the inputs
