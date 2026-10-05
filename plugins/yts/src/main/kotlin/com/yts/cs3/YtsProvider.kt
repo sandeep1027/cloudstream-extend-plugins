@@ -432,21 +432,33 @@ class YtsProvider : MainAPI() {
         val key = "$mode|$title|${year ?: ""}"
         torrentCache.get(key)?.let { return it }
 
-        var hits = queryTorrents(mode, title, year)
-        if (hits.isEmpty()) {
-            // The site's torrent search is a phrase match against release names, so a
-            // metadata title often matches nothing at all: "K.G.F: Chapter 3" finds
-            // no releases while "KGF" finds them. Retry with looser forms of the same
-            // title, keeping only releases that actually mention the stem so a
-            // different film cannot slip in.
-            for (looser in looserTitles(title)) {
-                val found = queryTorrents(mode, looser, year)
-                    .filter { it.title.orEmpty().contains(looser, ignoreCase = true) }
-                if (found.isNotEmpty()) {
-                    hits = found
-                    break
+        // The index filters `year` strictly against its own recorded year, which
+        // is often ±1 off the TMDB release date ("Toxic": TMDB 2026, index 2025),
+        // so the exact year is only the first try: year-1, year+1 and finally
+        // no year filter at all are retried before the title is loosened.
+        val yearVariants: List<Int?> =
+            if (year == null) listOf(null)
+            else listOf(year, year - 1, year + 1).filter { it > 0 }.distinct() + null
+
+        var hits = emptyList<YtsHit>()
+        for (y in yearVariants) {
+            hits = queryTorrents(mode, title, y)
+            if (hits.isEmpty()) {
+                // The site's torrent search is a phrase match against release names, so a
+                // metadata title often matches nothing at all: "K.G.F: Chapter 3" finds
+                // no releases while "KGF" finds them. Retry with looser forms of the same
+                // title, keeping only releases that actually mention the stem so a
+                // different film cannot slip in.
+                for (looser in looserTitles(title)) {
+                    val found = queryTorrents(mode, looser, y)
+                        .filter { it.title.orEmpty().contains(looser, ignoreCase = true) }
+                    if (found.isNotEmpty()) {
+                        hits = found
+                        break
+                    }
                 }
             }
+            if (hits.isNotEmpty()) break
         }
 
         torrentCache.put(key, hits)
@@ -456,21 +468,36 @@ class YtsProvider : MainAPI() {
     private suspend fun queryTorrents(mode: String, name: String, year: Int?): List<YtsHit> {
         val url = "$mainUrl/?api=torrents&mode=$mode&name=${encode(name)}&year=${year ?: ""}&quality=all"
         val text = getJson(url) ?: return emptyList()
-        return runCatching { AppUtils.parseJson<YtsTorrents>(text) }.getOrNull()?.hits.orEmpty()
+        val hits = runCatching { AppUtils.parseJson<YtsTorrents>(text) }.getOrNull()?.hits.orEmpty()
             .filter { !it.hash.isNullOrBlank() }
+        // A movie query must not pick up the same-named show: widening the year
+        // drags e.g. the "Toxic" (2025) series into the "Toxic" (2026) film lookup.
+        return if (mode == MODE_MOVIE) hits.filter { !isSeriesRelease(it) } else hits
     }
 
+    /** Episode/pack markers ("S02E03", "S01-S05", "Season 2") in a release name. */
+    private fun isSeriesRelease(hit: YtsHit): Boolean =
+        hit.episodeKey() != null || SERIES_PACK_PATTERN.containsMatchIn(hit.title.orEmpty())
+
     /**
-     * Progressively looser spellings of [title] for the site's phrase match: the part
-     * before a subtitle separator, punctuation removed, then the first word.
+     * Progressively looser spellings of [title] for the site's phrase match: the
+     * part before a subtitle separator, punctuation removed, then the first word.
+     * Both spellings of a stem are offered: punctuation glued away ("K.G.F" ->
+     * "KGF", the scene form) and punctuation turned into spaces — the phrase
+     * match needs the spaces, so a multi-word stem glued into one word finds
+     * nothing ("RenegadeImmortal" misses "Renegade Immortal ...").
      */
     private fun looserTitles(title: String): List<String> {
-        val squash = { text: String -> Regex("[^A-Za-z0-9]+").replace(text, "") }
-        val stem = title.split(':', '-', limit = 2).first().trim()
-        val firstWord = title.trim().split(' ', limit = 2).first().trim()
-        return listOf(stem, firstWord)
-            .map(squash)
-            .filter { it.length >= 3 && !it.equals(squash(title.trim()), ignoreCase = true) }
+        val trimmed = title.trim()
+        val stem = trimmed.split(':', '-', limit = 2).first().trim()
+        val firstWord = trimmed.split(' ', limit = 2).first().trim()
+        val glue = { text: String -> Regex("[^A-Za-z0-9]+").replace(text, "") }
+        val space = { text: String -> Regex("[^A-Za-z0-9]+").replace(text, " ").trim() }
+        return listOf(stem, space(stem), glue(stem), firstWord)
+            .filter { it.length >= 3 }
+            .filter { it.lowercase() != trimmed.lowercase() &&
+                space(it).lowercase() != space(trimmed).lowercase() &&
+                glue(it).lowercase() != glue(trimmed).lowercase() }
             .distinct()
     }
 
@@ -722,6 +749,8 @@ class YtsProvider : MainAPI() {
                     "|S\\d{1,2}E\\d{1,4}E\\d",
             RegexOption.IGNORE_CASE
         )
+        /** Season markers on a release name that is not a single episode. */
+        val SERIES_PACK_PATTERN = Regex("(?i)\\bS\\d{1,2}\\b|\\bseason\\b")
         val RESOLUTION_PATTERN = Regex("(\\d{3,4})p", RegexOption.IGNORE_CASE)
         val UHD_PATTERN = Regex("(4k|uhd)", RegexOption.IGNORE_CASE)
         val EXTENSION_PATTERN =

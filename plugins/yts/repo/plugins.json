@@ -2,7 +2,7 @@
   {
     "url": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/yts/repo/YTS.cs3",
     "status": 1,
-    "version": "1",
+    "version": "2",
     "apiVersion": 1,
     "name": "YTS",
     "internalName": "YTS",
@@ -17,7 +17,7 @@
     ],
     "language": "en",
     "iconUrl": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/yts/repo/icon.png",
-    "fileSize": "57353",
-    "fileHash": "sha256-afe100d3ae15ce3d92dff7485617079dfb91fd79d2ba285c4170ab7826d4d815"
+    "fileSize": "59184",
+    "fileHash": "sha256-5ed028a106e9b8f5d03c06fd0ac253f3e5cc2a6ea8d1296e95ef41d696751748"
   }
 ]
