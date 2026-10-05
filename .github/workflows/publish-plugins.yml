@@ -78,7 +78,18 @@ jobs:
         # tools", and that package no longer exists in the SDK repository, which
         # fails the run before it starts.
         run: |
-          sdkmanager "platforms;android-37.0" "build-tools;37.0.0"
+          # "sdkmanager" is not on PATH on ubuntu-latest: the image ships the
+          # cmdline-tools under a versioned directory, so look it up instead.
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          if [ ! -x "$SDKMANAGER" ]; then
+            SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -name sdkmanager -type f | head -1)"
+          fi
+          if [ -z "$SDKMANAGER" ]; then
+            echo "no sdkmanager under $ANDROID_HOME/cmdline-tools" >&2
+            exit 1
+          fi
+          echo "using $SDKMANAGER"
+          "$SDKMANAGER" "platforms;android-37.0" "build-tools;37.0.0"
 
       - name: Resolve the inputs
         run: |
