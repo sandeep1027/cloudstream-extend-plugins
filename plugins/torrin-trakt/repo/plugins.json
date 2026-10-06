@@ -2,7 +2,7 @@
   {
     "url": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/torrin-trakt/repo/TorrinTrakt.cs3",
     "status": 1,
-    "version": "2",
+    "version": "3",
     "apiVersion": 1,
     "name": "Torrin Trakt",
     "internalName": "Torrin Trakt",
@@ -17,7 +17,7 @@
     ],
     "language": "en",
     "iconUrl": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/torrin-trakt/repo/icon.png",
-    "fileSize": "55597",
-    "fileHash": "sha256-1739c7104e29822d911bcf7a978c000953be2181f09ad1568057696f68af724c"
+    "fileSize": "55594",
+    "fileHash": "sha256-7298ee85b82650d33a8ede7987cc5c37055dae160eb54294e59d95256eea9ade"
   }
 ]
