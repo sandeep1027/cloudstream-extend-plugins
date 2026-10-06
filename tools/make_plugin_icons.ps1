@@ -72,13 +72,37 @@ foreach ($icon in $icons) {
         $graphics.DrawString($icon.Initials, $font, $brush, (New-Object System.Drawing.RectangleF 0, 0, $Size, $Size), $format)
 
         $target = Join-Path $repoDir 'icon.png'
-        $bitmap.Save($target, [System.Drawing.Imaging.ImageFormat]::Png)
+
+        # Idempotent: only write if the file is missing or bytes differ. GDI+
+        # doesn't produce byte-identical PNGs across runs, so comparing the
+        # rendered bytes avoids churning unrelated icons in git.
+        $rendered = New-Object System.IO.MemoryStream
+        $bitmap.Save($rendered, [System.Drawing.Imaging.ImageFormat]::Png)
+        $newBytes = $rendered.ToArray()
+        $rendered.Dispose()
+
+        $write = $true
+        if (Test-Path $target) {
+            $oldBytes = [System.IO.File]::ReadAllBytes($target)
+            if ($oldBytes.Length -eq $newBytes.Length) {
+                $same = $true
+                for ($i = 0; $i -lt $oldBytes.Length; $i++) {
+                    if ($oldBytes[$i] -ne $newBytes[$i]) { $same = $false; break }
+                }
+                if ($same) { $write = $false }
+            }
+        }
+
+        if ($write) {
+            [System.IO.File]::WriteAllBytes($target, $newBytes)
+        }
 
         $format.Dispose()
         $brush.Dispose()
         $font.Dispose()
 
-        Write-Output ("  " + $icon.Module.PadRight(16) + "plugins/" + $icon.Module + "/repo/icon.png  " + $icon.Initials + "  " + $icon.Background)
+        $status = if ($write) { "written" } else { "unchanged" }
+        Write-Output ("  " + $icon.Module.PadRight(16) + "plugins/" + $icon.Module + "/repo/icon.png  " + $icon.Initials + "  " + $icon.Background + "  " + $status)
     } finally {
         $graphics.Dispose()
         $bitmap.Dispose()

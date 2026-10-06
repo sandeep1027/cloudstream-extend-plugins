@@ -3,7 +3,6 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlin.jvm)
-    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
@@ -22,7 +21,12 @@ dependencies {
     // matches the exact MainAPI surface shipped in this build.
     compileOnly(project(":library"))
     implementation(libs.nicehttp)
-    implementation(libs.kotlinx.serialization.json)
+    // Prowlarr's response is read with org.json rather than a generated
+    // kotlinx.serialization serializer: the serializer would be compiled against this
+    // build's kotlinx.serialization but resolve against the app's at runtime, and the
+    // two generations disagree on GeneratedSerializer (AbstractMethodError on device).
+    // org.json is part of the Android framework, so there is nothing to keep in step.
+    implementation(libs.json)
     // kotlinx-coroutines ships inside the app at runtime; compileOnly keeps
     // the plugin jar slim while allowing suspend/async usage.
     compileOnly(libs.kotlinx.coroutines.core)

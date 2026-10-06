@@ -35,6 +35,7 @@ import zipfile
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 PLUGINS = ROOT / "plugins"
 DEFAULT_BASE = "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins"
+WINDOWS = os.name == "nt"
 
 
 def log(message):
@@ -258,14 +259,20 @@ def main():
     log("==> building %d plugin(s): %s" % (len(selected), ", ".join(selected)))
     versions = {name: bump_manifest_version(name, args.bump) for name in selected}
 
-    # One Gradle run for every module: the per module build_cs3.sh scripts are
+    # One Gradle run for every module: the per module build_cs3 scripts are
     # skipped for the compile step and only do dex + packaging.
-    run(["sh", "./gradlew"] + [":plugins:%s:jar" % name for name in selected] + ["--quiet"])
+    if WINDOWS:
+        run(["cmd", "/c", "gradlew.bat"] + [":plugins:%s:jar" % name for name in selected] + ["--quiet"])
+    else:
+        run(["sh", "./gradlew"] + [":plugins:%s:jar" % name for name in selected] + ["--quiet"])
 
     log("==> packaging")
     env = dict(os.environ, CS3_SKIP_COMPILE="1")
     for name in selected:
-        run(["bash", "plugins/%s/build_cs3.sh" % name], env=env)
+        if WINDOWS:
+            run(["cmd", "/c", "plugins\\%s\\build_cs3.bat" % name], env=env)
+        else:
+            run(["bash", "plugins/%s/build_cs3.sh" % name], env=env)
 
     log("==> publishing")
     for name in selected:
