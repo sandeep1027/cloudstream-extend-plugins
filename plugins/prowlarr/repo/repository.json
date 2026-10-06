@@ -1,0 +1,9 @@
+{
+    "iconUrl":  null,
+    "name":  "Prowlarr",
+    "description":  "Search movies across every torrent indexer in your own Prowlarr instance. Set the address and API key in Settings > Player > Prowlarr; every link is a magnet resolved through your debrid account.",
+    "manifestVersion":  1,
+    "pluginLists":  [
+                        "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/prowlarr/repo/plugins.json"
+                    ]
+}

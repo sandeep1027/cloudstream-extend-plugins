@@ -1,0 +1,22 @@
+[
+  {
+    "url": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/prowlarr/repo/Prowlarr.cs3",
+    "status": 1,
+    "version": "1",
+    "apiVersion": 1,
+    "name": "Prowlarr",
+    "internalName": "Prowlarr",
+    "authors": [
+      "rootx"
+    ],
+    "description": "Movies from your own Prowlarr instance, searched across every indexer you have configured there. Add the address and API key under Settings > Player > Prowlarr, and playback resolves through your Torrin / TorBox / Real-Debrid account. Every link is a magnet rebuilt from the torrent hash, so your Prowlarr key is never handed to a debrid service.",
+    "repositoryUrl": null,
+    "tvTypes": [
+      "Movie"
+    ],
+    "language": "all",
+    "iconUrl": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/prowlarr/repo/icon.png",
+    "fileSize": "20338",
+    "fileHash": "sha256-fdf578c9a0a2c9095f42a5e35e5ccc60337ce514fe68f68756712b14518412fe"
+  }
+]

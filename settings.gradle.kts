@@ -44,5 +44,6 @@ include(
     ":plugins:animecube",
     ":plugins:hdhub4u",
     ":plugins:bollyflix",
+    ":plugins:prowlarr",
     ":plugins:yts"
 )

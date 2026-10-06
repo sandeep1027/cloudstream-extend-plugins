@@ -24,6 +24,7 @@ $icons = @(
     @{ Module = 'hdhub4u';        Initials = 'HD';  Background = '#3A86FF'; Text = '#FFFFFF' }
     @{ Module = 'bollyflix';      Initials = 'BF';  Background = '#E76F51'; Text = '#FFFFFF' }
     @{ Module = 'yts';            Initials = 'YTS'; Background = '#FFB703'; Text = '#1F2933' }
+    @{ Module = 'prowlarr';       Initials = 'PL';  Background = '#4A6FA5'; Text = '#FFFFFF' }
     @{ Module = 'torrin';         Initials = 'TR';  Background = '#4C956C'; Text = '#FFFFFF' }
     @{ Module = 'torrin-mdblist'; Initials = 'ML';  Background = '#6D597A'; Text = '#FFFFFF' }
     @{ Module = 'torrin-trakt';   Initials = 'TK';  Background = '#1D3557'; Text = '#FFFFFF' }
