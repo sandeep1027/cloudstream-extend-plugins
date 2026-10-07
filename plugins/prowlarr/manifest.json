@@ -2,5 +2,5 @@
   "name": "Prowlarr",
   "pluginClassName": "com.prowlarr.cs3.ProwlarrPlugin",
   "requiresResources": false,
-  "version": "5"
+  "version": "6"
 }
