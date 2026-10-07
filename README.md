@@ -137,32 +137,6 @@ If you prefer the raw steps: run the module's `build_cs3` script, copy
 `manifest.json` and `repo/plugins.json`, and copy the printed `fileSize` /
 `fileHash` into `repo/plugins.json`.
 
-## Testing without publishing
-
-Every `.cs3`/`.zip` in `<external storage>/Cloudstream3/plugins/` is loaded at
-launch, and there is a hot-reload intent that needs no restart:
-
-```bash
-adb push plugins/yts/build/cs3/YTS.cs3 /sdcard/Cloudstream3/plugins/
-adb shell am start -a android.intent.action.VIEW -d "cloudstreamapp:"
-adb logcat | grep -i pluginmanager
-```
-
-On Android 11+ the app needs all-files access to read that folder; if plugins
-seem ignored, grant it once with
-`adb shell appops set <package> MANAGE_EXTERNAL_STORAGE allow`.
-
-## Credits
-
-+ App: [recloudstream/cloudstream](https://github.com/recloudstream/cloudstream) (GPL-3.0)
-+ Fork and debrid integrations: `sandeep1027`
-+ HiAnime / AniKoto / AnimeCube / HDHub4u: ported to the CloudStream plugin API
-  from the community provider scrapers by **Spyou** (MIT)
-+ Torrin API: [torrin.app](https://torrin.app) · TorBox: [torbox.app](https://torbox.app) ·
-  Real-Debrid: [real-debrid.com](https://real-debrid.com) ·
-  TMDB: [themoviedb.org](https://www.themoviedb.org/) ·
-  Trakt: [trakt.tv](https://trakt.tv) · MDBList: [mdblist.com](https://mdblist.com)
-
 These plugins are not affiliated with or endorsed by any of the sites they read.
 They only ever fetch public pages; no copyrighted media is hosted or served here.
 
