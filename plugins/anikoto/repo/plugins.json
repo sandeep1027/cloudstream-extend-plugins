@@ -2,7 +2,7 @@
   {
     "url": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/anikoto/repo/AniKoto.cs3",
     "status": 1,
-    "version": "3",
+    "version": "4",
     "apiVersion": 1,
     "name": "AniKoto",
     "internalName": "AniKoto",
@@ -19,6 +19,6 @@
     "language": "en",
     "iconUrl": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/anikoto/repo/icon.png",
     "fileSize": "44302",
-    "fileHash": "sha256-131d7c2882b7c378c6bf7a71f49d2dfc8145e60760c4db655a7bfb0ac6ce56ca"
+    "fileHash": "sha256-b2dc8cb3b6659f6b3a34efa63e68cace9c0952221296e9c0f40269cdf274f772"
   }
 ]

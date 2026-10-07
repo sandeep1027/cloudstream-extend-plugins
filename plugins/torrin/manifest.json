@@ -2,5 +2,5 @@
   "name": "Torrin",
   "pluginClassName": "com.torrin.cs3.TorrinPlugin",
   "requiresResources": false,
-  "version": "12"
+  "version": "13"
 }
