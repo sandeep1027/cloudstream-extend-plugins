@@ -2,7 +2,7 @@
   {
     "url": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/hianime/repo/HiAnime.cs3",
     "status": 1,
-    "version": "2",
+    "version": "3",
     "apiVersion": 1,
     "name": "HiAnime",
     "internalName": "HiAnime",
@@ -18,6 +18,6 @@
     "language": "en",
     "iconUrl": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/hianime/repo/icon.png",
     "fileSize": "42242",
-    "fileHash": "sha256-4450fe1a14d18ede14c352247d576082d5e85447dc15d5ecb68ef1b607e639e3"
+    "fileHash": "sha256-9c1faf995e451844e3562ad6986b79c09bfeb93209b7178a0a67e7360003e379"
   }
 ]

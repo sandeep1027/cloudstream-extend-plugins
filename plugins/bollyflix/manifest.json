@@ -2,5 +2,5 @@
   "name": "BollyFlix",
   "pluginClassName": "com.bollyflix.cs3.BollyflixPlugin",
   "requiresResources": false,
-  "version": "2"
+  "version": "3"
 }
