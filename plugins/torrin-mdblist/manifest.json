@@ -2,5 +2,5 @@
   "name": "Torrin MDBList",
   "pluginClassName": "com.torrin.mdblist.MdblistPlugin",
   "requiresResources": false,
-  "version": "4"
+  "version": "5"
 }

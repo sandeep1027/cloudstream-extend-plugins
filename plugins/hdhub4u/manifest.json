@@ -2,5 +2,5 @@
   "name": "HDHub4u",
   "pluginClassName": "com.hdhub4u.cs3.Hdhub4uPlugin",
   "requiresResources": false,
-  "version": "4"
+  "version": "5"
 }

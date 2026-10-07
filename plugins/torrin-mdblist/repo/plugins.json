@@ -2,7 +2,7 @@
   {
     "url": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/torrin-mdblist/repo/TorrinMDBList.cs3",
     "status": 1,
-    "version": "4",
+    "version": "5",
     "apiVersion": 1,
     "name": "Torrin MDBList",
     "internalName": "Torrin MDBList",
@@ -18,6 +18,6 @@
     "language": "en",
     "iconUrl": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/torrin-mdblist/repo/icon.png",
     "fileSize": "57662",
-    "fileHash": "sha256-5dbaf9f583187524d1e3f72b28aeb86d853d7561f26b27810ea3545137d6d8db"
+    "fileHash": "sha256-ca9ff41ddc8b80d81063488bf6f4cb21a522ab4a57a328421007f88daabb8aed"
   }
 ]

@@ -2,7 +2,7 @@
   {
     "url": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/hdhub4u/repo/HDHub4u.cs3",
     "status": 1,
-    "version": "4",
+    "version": "5",
     "apiVersion": 1,
     "name": "HDHub4u",
     "internalName": "HDHub4u",
@@ -19,6 +19,6 @@
     "language": "en",
     "iconUrl": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/hdhub4u/repo/icon.png",
     "fileSize": "67575",
-    "fileHash": "sha256-f5e0b4da66f3fb57f91270c78c60d3069b46424f02db1964bf8ce84bf458ef32"
+    "fileHash": "sha256-56493603e6052902d2a8f24a16c7d9cebd061f87309d35e5e315a69d2b0a23b4"
   }
 ]

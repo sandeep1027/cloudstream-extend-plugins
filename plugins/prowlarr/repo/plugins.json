@@ -2,7 +2,7 @@
   {
     "url": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/prowlarr/repo/Prowlarr.cs3",
     "status": 1,
-    "version": "4",
+    "version": "5",
     "apiVersion": 1,
     "name": "Prowlarr",
     "internalName": "Prowlarr",
@@ -17,6 +17,6 @@
     "language": "all",
     "iconUrl": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/prowlarr/repo/icon.png",
     "fileSize": "17896",
-    "fileHash": "sha256-4a172e850603db445ad75065d6563a74f4ec26ee0dd2f297618186eef5d4df7c"
+    "fileHash": "sha256-0adb135720a5618932305331256c78fbb07c5f61a934feb3dfb2622c4e34deed"
   }
 ]

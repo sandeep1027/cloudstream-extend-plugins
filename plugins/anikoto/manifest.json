@@ -2,5 +2,5 @@
   "name": "AniKoto",
   "pluginClassName": "com.anikoto.cs3.AnikotoPlugin",
   "requiresResources": false,
-  "version": "4"
+  "version": "5"
 }
