@@ -18,3 +18,7 @@ cloudstream/
 .idea/
 *.iml
 .DS_Store
+
+# Claude Code
+CLAUDE.md
+.claude/
