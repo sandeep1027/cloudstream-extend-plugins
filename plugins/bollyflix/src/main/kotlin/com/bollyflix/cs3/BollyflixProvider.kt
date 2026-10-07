@@ -111,7 +111,7 @@ class BollyflixProvider : MainAPI() {
                             var link = button.attr("href")
 
                             // Unlock if needed.
-                            if (!link.contains("fastdlserver") && link.contains("?id=")) {
+                            if (!link.contains("fastdlserver")) {
                                 val id = link.substringAfterLast("id=")
                                 link = bypass(id)
                             }
@@ -161,11 +161,11 @@ class BollyflixProvider : MainAPI() {
         } else {
             // Movie: unlock all mirrors and pass as data.
             val data = supervisorScope {
-                document.select("a.dl, a.maxbutton-download-links, a.btnn").map { link ->
+                document.select("a.dl").map { link ->
                     async {
                         try {
                             var decodeUrl = link.attr("href")
-                            if (!decodeUrl.contains("fastdlserver") && decodeUrl.contains("?id=")) {
+                            if (!decodeUrl.contains("fastdlserver")) {
                                 val id = decodeUrl.substringAfterLast("id=")
                                 decodeUrl = bypass(id)
                             }
