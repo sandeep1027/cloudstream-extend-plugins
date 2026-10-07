@@ -165,3 +165,44 @@ seem ignored, grant it once with
 
 These plugins are not affiliated with or endorsed by any of the sites they read.
 They only ever fetch public pages; no copyrighted media is hosted or served here.
+
+## DMCA Disclaimer
+
+This project and its plugins do not host, store, or serve any copyrighted media
+content. All plugins only index and aggregate publicly available sources on the
+internet, similar to a search engine. No video files, streams, or copyrighted
+material are hosted on this project's servers or repositories.
+
+**For Copyright Holders:**
+
+If you believe that your copyrighted work has been infringed upon by any content
+indexed by these plugins, please note that:
+
+1. **We do not host any content.** The plugins only provide links to third-party
+   sources. Any content is hosted by those third-party sites, not by this project.
+
+2. **Contact the hosting site directly.** If you want content removed, you should
+   contact the website that is hosting the content directly. They are responsible
+   for the content on their servers.
+
+3. **Debrid services are user accounts.** Plugins that use Torrin, TorBox,
+   Real-Debrid, or similar services access content through the user's own account.
+   The plugins do not provide access to copyrighted material; users must have
+   their own accounts with these services.
+
+4. **We respond to valid legal requests.** If you have a legitimate legal concern
+   about a specific plugin's functionality (not the content it indexes), please
+   open an issue on this repository or contact the maintainers directly.
+
+**No Liability:**
+
+This project is provided "as is" without warranty of any kind. The maintainers
+are not responsible for any misuse of these plugins or any copyright violations
+committed by users. Users are responsible for ensuring their use of these plugins
+complies with their local laws and regulations.
+
+**Educational Purpose:**
+
+These plugins are developed for educational purposes to demonstrate how to build
+CloudStream extensions. Users should only access content they have the legal right
+to view in their jurisdiction.
