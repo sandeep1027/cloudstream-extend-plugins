@@ -24,12 +24,15 @@ want:
 | **Torrin** | `https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/torrin/repo/repository.json` | debrid + TMDB key |
 | **Torrin MDBList** | `https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/torrin-mdblist/repo/repository.json` | debrid + TMDB key + MDBList key |
 | **Torrin Trakt** | `https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/torrin-trakt/repo/repository.json` | debrid + TMDB key + Trakt id |
+| **Prowlarr** | `https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/prowlarr/repo/repository.json` | a Prowlarr instance + debrid |
 
 The first four stream directly and need no key. **BollyFlix** and **YTS** are
 metadata/torrent sources: the site serves no video, so every link is a magnet
 resolved through your **Torrin / TorBox / Real-Debrid** account (Settings → Player
 → Debrid). The Torrin plugins additionally want a free TMDB key in
-Settings → Player → Metadata.
+Settings → Player → Metadata. **Prowlarr** searches the indexers you configured on
+your own Prowlarr server: give it the address and API key under Settings → Player →
+Prowlarr, and it hands the matched releases to debrid the same way.
 
 Home rows are shown for **one provider at a time** — tap the provider chip at the
 bottom of Home and pick the one you want. The chips in that picker decide which
@@ -57,6 +60,7 @@ regenerate them with `powershell -NoProfile -File tools/make_plugin_icons.ps1`.
 | `plugins/torrin` | — | Curated dashboard and "Latest on Netflix / Hotstar / ZEE5 / SonyLIV" rows, Torrentio + debrid playback. |
 | `plugins/torrin-mdblist` | MDBList | "Latest Movies" / "Latest Shows" rows plus trending. |
 | `plugins/torrin-trakt` | Trakt | "Latest Movies" / "Latest Episodes" rows from the public Trakt calendar. |
+| `plugins/prowlarr` | your own Prowlarr server | Movies: queries every indexer configured on your Prowlarr instance through its API and emits magnets (rebuilt from the info hash) for debrid playback. Needs the server address + API key in Settings → Player → Prowlarr. |
 | `plugins/anime` | AniList | AniList catalogue (source only — not published as a repository). |
 
 Playback note: many of these hosts answer `403` unless the request carries the
