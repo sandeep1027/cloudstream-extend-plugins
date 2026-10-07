@@ -2,7 +2,7 @@
   {
     "url": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/bollyflix/repo/BollyFlix.cs3",
     "status": 1,
-    "version": "6",
+    "version": "7",
     "apiVersion": 1,
     "name": "BollyFlix",
     "internalName": "BollyFlix",
@@ -18,7 +18,7 @@
     ],
     "language": "en",
     "iconUrl": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/bollyflix/repo/icon.png",
-    "fileSize": "38711",
-    "fileHash": "sha256-a0060c061ae18c0a7bf14224323f3363145ab770b852b1c50337272385c1cf2c"
+    "fileSize": "32185",
+    "fileHash": "sha256-1093eeb3b5ed883080114c85e8f0f908829347bf996e57de113e1f5b57472da8"
   }
 ]
