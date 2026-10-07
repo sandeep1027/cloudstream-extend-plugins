@@ -2,7 +2,7 @@
   {
     "url": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/bollyflix/repo/BollyFlix.cs3",
     "status": 1,
-    "version": "3",
+    "version": "4",
     "apiVersion": 1,
     "name": "BollyFlix",
     "internalName": "BollyFlix",
@@ -10,7 +10,7 @@
       "Spyou",
       "rootx"
     ],
-    "description": "BollyFlix (new.bollyflix.vote) catalogue: Bollywood, Hollywood, dual-audio, Hindi-dubbed and Korean movies and web series, with the per-title quality table (480p/720p/1080p/2160p with sizes). The site only publishes download links, so playback is resolved from the torrent layer through your Torrin / TorBox / Real-Debrid account (Settings > Player > Debrid).",
+    "description": "BollyFlix (new.bollyflix.vote) catalogue: Bollywood, Hollywood, dual-audio, Hindi-dubbed and Korean movies and web series, with the per-title quality table (480p/720p/1080p/2160p with sizes). Streams directly from the site's own mirrors — no torrent index, no debrid account needed.",
     "repositoryUrl": null,
     "tvTypes": [
       "Movie",
@@ -18,7 +18,7 @@
     ],
     "language": "en",
     "iconUrl": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/bollyflix/repo/icon.png",
-    "fileSize": "56665",
-    "fileHash": "sha256-7a46bd5233d6f37763fd829766bf0bf2c4bdb23b412a6b225f8b854b200c6ed0"
+    "fileSize": "38711",
+    "fileHash": "sha256-014f819df58709b32f5f86060bf817b0b20733c2c9f1e098452f38fe1793d844"
   }
 ]

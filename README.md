@@ -19,20 +19,20 @@ want:
 | **AniKoto** | `https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/anikoto/repo/repository.json` | nothing |
 | **AnimeCube** | `https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/animecube/repo/repository.json` | nothing |
 | **HDHub4u** | `https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/hdhub4u/repo/repository.json` | nothing |
-| **BollyFlix** | `https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/bollyflix/repo/repository.json` | a debrid account |
+| **BollyFlix** | `https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/bollyflix/repo/repository.json` | nothing |
 | **YTS** | `https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/yts/repo/repository.json` | a debrid account |
 | **Torrin** | `https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/torrin/repo/repository.json` | debrid + TMDB key |
 | **Torrin MDBList** | `https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/torrin-mdblist/repo/repository.json` | debrid + TMDB key + MDBList key |
 | **Torrin Trakt** | `https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/torrin-trakt/repo/repository.json` | debrid + TMDB key + Trakt id |
 | **Prowlarr** | `https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/prowlarr/repo/repository.json` | a Prowlarr instance + debrid |
 
-The first four stream directly and need no key. **BollyFlix** and **YTS** are
-metadata/torrent sources: the site serves no video, so every link is a magnet
-resolved through your **Torrin / TorBox / Real-Debrid** account (Settings → Player
-→ Debrid). The Torrin plugins additionally want a free TMDB key in
-Settings → Player → Metadata. **Prowlarr** searches the indexers you configured on
-your own Prowlarr server: give it the address and API key under Settings → Player →
-Prowlarr, and it hands the matched releases to debrid the same way.
+The first five stream directly and need no key. **YTS** is a metadata/torrent
+source: the site serves no video, so every link is a magnet resolved through
+your **Torrin / TorBox / Real-Debrid** account (Settings → Player → Debrid).
+The Torrin plugins additionally want a free TMDB key in Settings → Player →
+Metadata. **Prowlarr** searches the indexers you configured on your own Prowlarr
+server: give it the address and API key under Settings → Player → Prowlarr, and
+it hands the matched releases to debrid the same way.
 
 Home rows are shown for **one provider at a time** — tap the provider chip at the
 bottom of Home and pick the one you want. The chips in that picker decide which
@@ -55,7 +55,7 @@ regenerate them with `powershell -NoProfile -File tools/make_plugin_icons.ps1`.
 | `plugins/anikoto` | anikototv.to | Anime: home rows, search, sub/dub, streams through the site's server chain including MegaPlay's AES-encrypted sources. |
 | `plugins/animecube` | animecube.live | Anime: listings and episodes from the site's Next.js payload, streams from its sources endpoint, Dailymotion/Rumble expanded to HLS/MP4. |
 | `plugins/hdhub4u` | HDHub4u | Movies and series (Hindi/Hollywood): home rows, search, episodes, streams through the site's link-bypass hops. |
-| `plugins/bollyflix` | new.bollyflix.vote | Bollywood/Hollywood/dual-audio/Korean catalogue from the site's WordPress REST API, with the per-title quality table. Emits magnets for debrid playback. |
+| `plugins/bollyflix` | new.bollyflix.vote | Bollywood/Hollywood/dual-audio/Korean catalogue from the site's WordPress REST API, with the per-title quality table. Streams directly from the site's own mirrors; no debrid account needed. |
 | `plugins/yts` | en.yts.lu | Movies and shows with home rows per streaming service (Netflix, Prime Video, Disney+, Max, Hulu + TV equivalents), This Week / Today, Indian rows, genres. Magnets labelled with quality, size and seeders. |
 | `plugins/torrin` | — | Curated dashboard and "Latest on Netflix / Hotstar / ZEE5 / SonyLIV" rows, Torrentio + debrid playback. |
 | `plugins/torrin-mdblist` | MDBList | "Latest Movies" / "Latest Shows" rows plus trending. |

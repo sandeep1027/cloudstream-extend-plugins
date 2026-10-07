@@ -262,7 +262,7 @@ def main():
     # One Gradle run for every module: the per module build_cs3 scripts are
     # skipped for the compile step and only do dex + packaging.
     if WINDOWS:
-        run(["cmd", "/c", "gradlew.bat"] + [":plugins:%s:jar" % name for name in selected] + ["--quiet"])
+        run(["cmd", "/c", ".\\gradlew.bat"] + [":plugins:%s:jar" % name for name in selected] + ["--quiet"])
     else:
         run(["sh", "./gradlew"] + [":plugins:%s:jar" % name for name in selected] + ["--quiet"])
 
