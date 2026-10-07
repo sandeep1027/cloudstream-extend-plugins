@@ -472,12 +472,29 @@ class YtsProvider : MainAPI() {
             .filter { !it.hash.isNullOrBlank() }
         // A movie query must not pick up the same-named show: widening the year
         // drags e.g. the "Toxic" (2025) series into the "Toxic" (2026) film lookup.
-        return if (mode == MODE_MOVIE) hits.filter { !isSeriesRelease(it) } else hits
+        // Trailers, teasers, clips and other extras are also filtered out — the
+        // index mixes them in with actual releases, and a trailer with high seeds
+        // could otherwise rank above the movie itself.
+        return when (mode) {
+            MODE_MOVIE -> hits.filter { !isSeriesRelease(it) && !isTrailerOrExtra(it) }
+            else -> hits.filter { !isTrailerOrExtra(it) }
+        }
     }
 
     /** Episode/pack markers ("S02E03", "S01-S05", "Season 2") in a release name. */
     private fun isSeriesRelease(hit: YtsHit): Boolean =
         hit.episodeKey() != null || SERIES_PACK_PATTERN.containsMatchIn(hit.title.orEmpty())
+
+    /**
+     * Trailers, teasers, clips and other non-movie extras. The torrent index
+     * includes these alongside actual releases, and without filtering them a
+     * trailer could be emitted as the movie (especially if it has more seeds or
+     * appears in a looser title match).
+     */
+    private fun isTrailerOrExtra(hit: YtsHit): Boolean {
+        val title = hit.title.orEmpty().lowercase()
+        return TRAILER_PATTERN.containsMatchIn(title)
+    }
 
     /**
      * Progressively looser spellings of [title] for the site's phrase match: the
@@ -755,6 +772,16 @@ class YtsProvider : MainAPI() {
         val UHD_PATTERN = Regex("(4k|uhd)", RegexOption.IGNORE_CASE)
         val EXTENSION_PATTERN =
             Regex("\\.(mkv|mp4|avi|mov|m4v|webm|mpg|mpeg|ts|m2ts)$", RegexOption.IGNORE_CASE)
+        /**
+         * Trailers, teasers, clips and other non-movie extras. The index mixes
+         * these with actual releases; a trailer titled "Movie (2024) [1080p]
+         * [Official Trailer]" would otherwise pass through and could rank above
+         * the real movie.
+         */
+        val TRAILER_PATTERN = Regex(
+            "\\b(trailer|teaser|clip|featurette|behind[- ]the[- ]scenes|bts|promo|interview|deleted scene|scene\\b|sneak peek|preview)\\b",
+            RegexOption.IGNORE_CASE
+        )
         val WHITESPACE_PATTERN = Regex("\\s+")
     }
 }
