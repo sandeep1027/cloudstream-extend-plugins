@@ -2,7 +2,7 @@
   {
     "url": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/torrin/repo/Torrin.cs3",
     "status": 1,
-    "version": "15",
+    "version": "16",
     "apiVersion": 1,
     "name": "Torrin",
     "internalName": "Torrin",
@@ -18,6 +18,6 @@
     "language": "en",
     "iconUrl": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/torrin/repo/icon.png",
     "fileSize": "56959",
-    "fileHash": "sha256-85b513cb5efa94eb553aad122932d4e0daf45c96ce1a8b0f5541bdfbfbc0455f"
+    "fileHash": "sha256-47502363958a691b5995ee0ac075bf50e4a1661ffb8d1562c125e5a7383132a6"
   }
 ]

@@ -2,7 +2,7 @@
   {
     "url": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/animecube/repo/AnimeCube.cs3",
     "status": 1,
-    "version": "6",
+    "version": "7",
     "apiVersion": 1,
     "name": "AnimeCube",
     "internalName": "AnimeCube",
@@ -18,6 +18,6 @@
     "language": "zh",
     "iconUrl": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/animecube/repo/icon.png",
     "fileSize": "43577",
-    "fileHash": "sha256-a92233b5fce1b18fc663d6591cac1d7b2f2a427f6426d0cead3661ca682febbb"
+    "fileHash": "sha256-9f0f31602fdeff292bad416891a3fd8eb3836e4a9c2a162fb016d8e81e0123b9"
   }
 ]
