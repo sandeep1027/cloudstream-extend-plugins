@@ -47,8 +47,6 @@ class BollyflixProvider : MainAPI() {
         "/movies/bollywood/" to "Bollywood Movies",
         "/movies/hollywood/" to "Hollywood Movies",
         "/movies/south-hindi-dubbed/" to "South (Hindi Dubbed)",
-        "/dual-audio/" to "Dual Audio",
-        "/genre/18/" to "[18+] Movies",
         "/web-series/" to "WEB Series",
         "/anime/" to "Anime"
     )
