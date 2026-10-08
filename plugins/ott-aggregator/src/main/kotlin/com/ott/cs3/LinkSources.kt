@@ -267,11 +267,47 @@ suspend fun extractSkyMoviesHDDownloadLinks(movieUrl: String): List<OttSource> {
 
         Log.d(TAG, "extractSkyMoviesHDDownloadLinks: found ${downloadLinks.size} total links")
 
+        // Log all unique link domains to understand the page structure
+        val allDomains = mutableSetOf<String>()
+        downloadLinks.forEach { link ->
+            val href = link.attr("href")
+            if (href.isNotBlank() && href.startsWith("http")) {
+                val domain = href.substringAfter("://").substringBefore("/").substringBefore("?")
+                allDomains.add(domain)
+            }
+        }
+        Log.d(TAG, "extractSkyMoviesHDDownloadLinks: unique domains: ${allDomains.joinToString(", ")}")
+
+        // Check for iframes (embedded video players)
+        val iframes = doc.select("iframe[src]")
+        Log.d(TAG, "extractSkyMoviesHDDownloadLinks: found ${iframes.size} iframes")
+        iframes.forEach { iframe ->
+            val src = iframe.attr("src")
+            if (src.isNotBlank()) {
+                Log.d(TAG, "extractSkyMoviesHDDownloadLinks: iframe src=$src")
+            }
+        }
+
+        // Check for video tags
+        val videos = doc.select("video[src], source[src]")
+        Log.d(TAG, "extractSkyMoviesHDDownloadLinks: found ${videos.size} video sources")
+        videos.forEach { video ->
+            val src = video.attr("src")
+            if (src.isNotBlank()) {
+                Log.d(TAG, "extractSkyMoviesHDDownloadLinks: video src=$src")
+            }
+        }
+
         val seenUrls = mutableSetOf<String>()
 
         downloadLinks.forEach { link ->
             val href = link.attr("href")
             if (href.isNotBlank() && !seenUrls.contains(href)) {
+                // Log the link for debugging
+                if (href.startsWith("http")) {
+                    Log.d(TAG, "extractSkyMoviesHDDownloadLinks: checking link: $href")
+                }
+
                 // Check if it's a bypass-able link
                 if (href.contains("hubcloud", ignoreCase = true) ||
                     href.contains("gdflix", ignoreCase = true) ||
@@ -286,6 +322,8 @@ suspend fun extractSkyMoviesHDDownloadLinks(movieUrl: String): List<OttSource> {
                     seenUrls.add(href)
                     val linkText = link.text()
                     val quality = ottQuality(linkText)
+
+                    Log.d(TAG, "extractSkyMoviesHDDownloadLinks: extracted source: $href (text=$linkText)")
 
                     sources.add(
                         OttSource(
