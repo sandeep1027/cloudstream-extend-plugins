@@ -387,8 +387,8 @@ private suspend fun fromLinksMod(
  * HowBlogs redirector bypass.
  *
  * howblogs.xyz is a link shortener used by SkyMoviesHD that redirects to actual
- * file hosts (Google Drive, HubCloud, etc.). This function follows the redirect
- * chain to extract the final destination URL.
+ * file hosts (Google Drive, HubCloud, GdFlix, GoFile, StreamTape, etc.). This
+ * function extracts all file host links and dispatches them appropriately.
  */
 private suspend fun fromHowBlogs(
     url: String,
@@ -401,50 +401,69 @@ private suspend fun fromHowBlogs(
 
         // Look for redirect links or direct download links
         val links = doc.select("a[href]")
+        val foundLinks = mutableSetOf<String>()
+
         for (link in links) {
             val href = link.attr("href")
-            if (href.isNotBlank() && href.startsWith("http")) {
+            if (href.isNotBlank() && href.startsWith("http") && !foundLinks.contains(href)) {
                 Log.d(TAG, "fromHowBlogs: found link $href")
-                // Check if it's a known file host
-                if (href.contains("drive.google", ignoreCase = true) ||
-                    href.contains("hubcloud", ignoreCase = true) ||
-                    href.contains("gdflix", ignoreCase = true)) {
-                    callback(
-                        newExtractorLink(
-                            source = "HowBlogs",
-                            name = "$label [HowBlogs]",
-                            url = href,
-                            type = ExtractorLinkType.VIDEO
-                        ) {
-                            this.quality = ottQuality(label)
-                            this.referer = url
-                        }
-                    )
-                    return
+
+                // Check if it's a known file host that needs special handling
+                when {
+                    href.contains("hubcloud", ignoreCase = true) -> {
+                        foundLinks.add(href)
+                        fromHubCloud(href, label, callback)
+                    }
+                    href.contains("gdflix", ignoreCase = true) || href.contains("gdlink", ignoreCase = true) -> {
+                        foundLinks.add(href)
+                        fromGdFlix(href, label, callback)
+                    }
+                    // For other file hosts, use the generic extractor loader
+                    href.contains("drive.google", ignoreCase = true) ||
+                    href.contains("gofile", ignoreCase = true) ||
+                    href.contains("streamtape", ignoreCase = true) ||
+                    href.contains("clicknupload", ignoreCase = true) ||
+                    href.contains("uploadhub", ignoreCase = true) ||
+                    href.contains("ddownload", ignoreCase = true) ||
+                    href.contains("1cloudfile", ignoreCase = true) ||
+                    href.contains("megaup", ignoreCase = true) ||
+                    href.contains("uploadflix", ignoreCase = true) ||
+                    href.contains("voe.sx", ignoreCase = true) ||
+                    href.contains("pixeldrain", ignoreCase = true) -> {
+                        foundLinks.add(href)
+                        Log.d(TAG, "fromHowBlogs: dispatching to loadExtractor: $href")
+                        loadExtractor(href, url, { }, callback)
+                    }
                 }
             }
         }
 
         // Try to find link in meta refresh or JavaScript
-        val metaRefresh = doc.select("meta[http-equiv=refresh]").attr("content")
-        if (metaRefresh.contains("url=")) {
-            val redirectUrl = metaRefresh.substringAfter("url=").trim()
-            Log.d(TAG, "fromHowBlogs redirect: $redirectUrl")
-            loadExtractor(redirectUrl, url, { }, callback)
-            return
+        if (foundLinks.isEmpty()) {
+            val metaRefresh = doc.select("meta[http-equiv=refresh]").attr("content")
+            if (metaRefresh.contains("url=")) {
+                val redirectUrl = metaRefresh.substringAfter("url=").trim()
+                Log.d(TAG, "fromHowBlogs redirect: $redirectUrl")
+                loadExtractor(redirectUrl, url, { }, callback)
+                return
+            }
+
+            val scripts = doc.select("script").joinToString("\n")
+            val urlPattern = Regex("""(?:window\.location|location\.href)\s*=\s*['"]([^'"]+)['"]""")
+            val match = urlPattern.find(scripts)
+            if (match != null) {
+                val redirectUrl = match.groupValues[1]
+                Log.d(TAG, "fromHowBlogs JS redirect: $redirectUrl")
+                loadExtractor(redirectUrl, url, { }, callback)
+                return
+            }
         }
 
-        val scripts = doc.select("script").joinToString("\n")
-        val urlPattern = Regex("""(?:window\.location|location\.href)\s*=\s*['"]([^'"]+)['"]""")
-        val match = urlPattern.find(scripts)
-        if (match != null) {
-            val redirectUrl = match.groupValues[1]
-            Log.d(TAG, "fromHowBlogs JS redirect: $redirectUrl")
-            loadExtractor(redirectUrl, url, { }, callback)
-            return
+        if (foundLinks.isEmpty()) {
+            Log.w(TAG, "fromHowBlogs: no redirect found")
+        } else {
+            Log.d(TAG, "fromHowBlogs: processed ${foundLinks.size} links")
         }
-
-        Log.w(TAG, "fromHowBlogs: no redirect found")
     } catch (e: Exception) {
         Log.e(TAG, "fromHowBlogs failed: ${e.message}")
     }

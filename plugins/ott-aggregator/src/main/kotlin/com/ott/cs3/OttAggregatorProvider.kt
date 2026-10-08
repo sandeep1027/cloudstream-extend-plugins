@@ -33,11 +33,13 @@ class OttAggregatorProvider : MainAPI() {
 
     override val mainPage = mainPageOf(
         "" to "Home",
-        "/category/bollywood-movies/" to "Bollywood",
-        "/category/hollywood-english-movies/" to "Hollywood English",
-        "/category/hollywood-hindi-dubbed-movies/" to "Hollywood Hindi",
-        "/category/south-indian-hindi-dubbed-movies/" to "South Hindi Dubbed",
-        "/category/web-series/" to "Web Series"
+        "/search.php?search=&cat=Bollywood+Movies" to "Bollywood",
+        "/search.php?search=&cat=South+Indian+Hindi+Dubbed+Movies" to "South Hindi Dubbed",
+        "/search.php?search=&cat=Hollywood+English+Movies" to "Hollywood English",
+        "/search.php?search=&cat=Hollywood+Hindi+Dubbed+Movies" to "Hollywood Hindi",
+        "/search.php?search=&cat=WWE+TV+Shows" to "WWE",
+        "/search.php?search=&cat=TV+Serial+Episodes" to "TV Serial",
+        "/search.php?search=&cat=Hot+Short+Film" to "Short Films"
     )
 
     override suspend fun getMainPage(
