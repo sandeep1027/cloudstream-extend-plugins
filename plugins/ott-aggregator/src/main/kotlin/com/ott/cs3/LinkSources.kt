@@ -332,7 +332,9 @@ suspend fun extractSkyMoviesHDDownloadLinks(movieUrl: String): List<OttSource> {
                     href.contains("linksmod", ignoreCase = true) ||
                     href.contains("sidexfee", ignoreCase = true) ||
                     href.contains("howblogs", ignoreCase = true) ||
+                    href.contains("linkrit", ignoreCase = true) ||
                     href.contains("tpead", ignoreCase = true) ||
+                    href.contains("vidwatch", ignoreCase = true) ||
                     href.contains("skybap", ignoreCase = true)) {
 
                     seenUrls.add(href)

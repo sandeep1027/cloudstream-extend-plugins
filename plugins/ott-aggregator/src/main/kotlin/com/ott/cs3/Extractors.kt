@@ -75,6 +75,12 @@ suspend fun emitOttSources(
                 fromSkyBap(url, source.label, callback)
             }
 
+            url.contains("vidwatch", ignoreCase = true) ||
+                url.contains("linkrit", ignoreCase = true) -> {
+                Log.d(TAG, "emitOttSources[$i]: dispatching to loadExtractor (video host)")
+                loadExtractor(url, "", subtitleCallback, callback)
+            }
+
             else -> {
                 Log.d(TAG, "emitOttSources[$i]: dispatching to loadExtractor")
                 loadExtractor(url, "", subtitleCallback, callback)
