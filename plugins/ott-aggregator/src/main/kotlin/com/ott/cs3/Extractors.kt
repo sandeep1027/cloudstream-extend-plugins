@@ -467,7 +467,8 @@ private suspend fun fromHowBlogs(
  * Tpead video host extractor.
  *
  * tpead.net is a video hosting service used by SkyMoviesHD for "WATCH ONLINE"
- * links. It's similar to VidHide/VidStack and serves m3u8 or direct video files.
+ * links. The URL often contains the direct video file path. If the URL ends
+ * with a video extension, use it directly. Otherwise, try to extract from page.
  */
 private suspend fun fromTpead(
     url: String,
@@ -476,6 +477,24 @@ private suspend fun fromTpead(
 ) {
     try {
         Log.d(TAG, "fromTpead: $url")
+
+        // Check if URL already contains a direct video file path
+        if (url.matches(Regex(".*\\.(mp4|mkv|avi|webm)(\\?.*)?$", RegexOption.IGNORE_CASE))) {
+            Log.d(TAG, "fromTpead: URL is direct video file, using directly")
+            callback(
+                newExtractorLink(
+                    source = "Tpead",
+                    name = "$label [Tpead]",
+                    url = url,
+                    type = ExtractorLinkType.VIDEO
+                ) {
+                    this.quality = ottQuality(label)
+                    this.referer = OttDomains.baseOf(url)
+                }
+            )
+            return
+        }
+
         val doc = app.get(url).document
 
         // Look for video source in the page
