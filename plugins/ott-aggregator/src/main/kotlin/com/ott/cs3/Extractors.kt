@@ -418,29 +418,12 @@ private suspend fun fromHowBlogs(
                         foundLinks.add(href)
                         fromGdFlix(href, label, callback)
                     }
-                    // For other file hosts, use the generic extractor loader
-                    href.contains("drive.google", ignoreCase = true) ||
-                    href.contains("gofile", ignoreCase = true) ||
-                    href.contains("streamtape", ignoreCase = true) ||
-                    href.contains("clicknupload", ignoreCase = true) ||
-                    href.contains("uploadhub", ignoreCase = true) ||
-                    href.contains("ddownload", ignoreCase = true) ||
-                    href.contains("1cloudfile", ignoreCase = true) ||
-                    href.contains("megaup", ignoreCase = true) ||
-                    href.contains("uploadflix", ignoreCase = true) ||
-                    href.contains("voe.sx", ignoreCase = true) ||
-                    href.contains("pixeldrain", ignoreCase = true) ||
-                    href.contains("send.cm", ignoreCase = true) ||
-                    href.contains("racaty", ignoreCase = true) ||
-                    href.contains("uploadbox", ignoreCase = true) ||
-                    href.contains("dropgalaxy", ignoreCase = true) ||
-                    href.contains("hubdrive", ignoreCase = true) ||
-                    href.contains("drivehub", ignoreCase = true) ||
-                    href.contains("sharer.pw", ignoreCase = true) ||
-                    href.contains("gdtot", ignoreCase = true) ||
-                    href.contains("hubfiles", ignoreCase = true) ||
-                    href.contains("w4files", ignoreCase = true) ||
-                    href.contains("we.tl", ignoreCase = true) -> {
+                    // Skip navigation links to the same site
+                    href.contains("howblogs.xyz", ignoreCase = true) -> {
+                        // Skip internal navigation
+                    }
+                    // For all other http links, use the generic extractor loader
+                    else -> {
                         foundLinks.add(href)
                         Log.d(TAG, "fromHowBlogs: dispatching to loadExtractor: $href")
                         loadExtractor(href, url, { }, callback)
@@ -556,7 +539,8 @@ private suspend fun fromTpead(
  * SkyBap redirector bypass.
  *
  * skybap.site is the main domain redirector for SkyMoviesHD. It may contain
- * links to actual file hosts or further redirects.
+ * links to actual file hosts or further redirects. Dispatch all found links
+ * to loadExtractor.
  */
 private suspend fun fromSkyBap(
     url: String,
@@ -569,32 +553,46 @@ private suspend fun fromSkyBap(
 
         // Look for download links
         val links = doc.select("a[href]")
+        val foundLinks = mutableSetOf<String>()
+
         for (link in links) {
             val href = link.attr("href")
-            if (href.isNotBlank() && href.startsWith("http")) {
+            if (href.isNotBlank() && href.startsWith("http") && !foundLinks.contains(href)) {
                 Log.d(TAG, "fromSkyBap: found link $href")
-                // Check if it's a known file host or another redirector
-                if (href.contains("drive.google", ignoreCase = true) ||
-                    href.contains("hubcloud", ignoreCase = true) ||
-                    href.contains("gdflix", ignoreCase = true) ||
-                    href.contains("howblogs", ignoreCase = true)) {
-                    callback(
-                        newExtractorLink(
-                            source = "SkyBap",
-                            name = "$label [SkyBap]",
-                            url = href,
-                            type = ExtractorLinkType.VIDEO
-                        ) {
-                            this.quality = ottQuality(label)
-                            this.referer = url
-                        }
-                    )
-                    return
+
+                // Skip navigation links to the same site
+                if (href.contains("skymovieshd", ignoreCase = true) ||
+                    href.contains("skybap", ignoreCase = true) ||
+                    href.contains("supercounters", ignoreCase = true)) {
+                    continue
+                }
+
+                foundLinks.add(href)
+
+                // Dispatch based on domain
+                when {
+                    href.contains("hubcloud", ignoreCase = true) -> {
+                        fromHubCloud(href, label, callback)
+                    }
+                    href.contains("gdflix", ignoreCase = true) || href.contains("gdlink", ignoreCase = true) -> {
+                        fromGdFlix(href, label, callback)
+                    }
+                    href.contains("howblogs", ignoreCase = true) -> {
+                        fromHowBlogs(href, label, callback)
+                    }
+                    else -> {
+                        Log.d(TAG, "fromSkyBap: dispatching to loadExtractor: $href")
+                        loadExtractor(href, url, { }, callback)
+                    }
                 }
             }
         }
 
-        Log.w(TAG, "fromSkyBap: no download links found")
+        if (foundLinks.isEmpty()) {
+            Log.w(TAG, "fromSkyBap: no download links found")
+        } else {
+            Log.d(TAG, "fromSkyBap: processed ${foundLinks.size} links")
+        }
     } catch (e: Exception) {
         Log.e(TAG, "fromSkyBap failed: ${e.message}")
     }
