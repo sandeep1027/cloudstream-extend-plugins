@@ -236,7 +236,10 @@ suspend fun extractSkyMoviesHDDownloadLinks(movieUrl: String): List<OttSource> {
                     href.contains("gdlink", ignoreCase = true) ||
                     href.contains("fastdlserver", ignoreCase = true) ||
                     href.contains("linksmod", ignoreCase = true) ||
-                    href.contains("sidexfee", ignoreCase = true)) {
+                    href.contains("sidexfee", ignoreCase = true) ||
+                    href.contains("howblogs", ignoreCase = true) ||
+                    href.contains("tpead", ignoreCase = true) ||
+                    href.contains("skybap", ignoreCase = true)) {
 
                     seenUrls.add(href)
                     val linkText = link.text()

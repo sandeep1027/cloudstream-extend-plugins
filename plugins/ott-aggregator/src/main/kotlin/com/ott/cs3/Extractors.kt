@@ -60,6 +60,21 @@ suspend fun emitOttSources(
                 }
             }
 
+            url.contains("howblogs", ignoreCase = true) -> {
+                Log.d(TAG, "emitOttSources[$i]: dispatching to HowBlogs bypass")
+                fromHowBlogs(url, source.label, callback)
+            }
+
+            url.contains("tpead", ignoreCase = true) -> {
+                Log.d(TAG, "emitOttSources[$i]: dispatching to Tpead video host")
+                fromTpead(url, source.label, callback)
+            }
+
+            url.contains("skybap", ignoreCase = true) -> {
+                Log.d(TAG, "emitOttSources[$i]: dispatching to SkyBap bypass")
+                fromSkyBap(url, source.label, callback)
+            }
+
             else -> {
                 Log.d(TAG, "emitOttSources[$i]: dispatching to loadExtractor")
                 loadExtractor(url, "", subtitleCallback, callback)
@@ -365,5 +380,192 @@ private suspend fun fromLinksMod(
         Log.w(TAG, "fromLinksMod: no redirect found")
     } catch (e: Exception) {
         Log.e(TAG, "fromLinksMod failed: ${e.message}")
+    }
+}
+
+/**
+ * HowBlogs redirector bypass.
+ *
+ * howblogs.xyz is a link shortener used by SkyMoviesHD that redirects to actual
+ * file hosts (Google Drive, HubCloud, etc.). This function follows the redirect
+ * chain to extract the final destination URL.
+ */
+private suspend fun fromHowBlogs(
+    url: String,
+    label: String,
+    callback: (ExtractorLink) -> Unit
+) {
+    try {
+        Log.d(TAG, "fromHowBlogs: $url")
+        val doc = app.get(url).document
+
+        // Look for redirect links or direct download links
+        val links = doc.select("a[href]")
+        for (link in links) {
+            val href = link.attr("href")
+            if (href.isNotBlank() && href.startsWith("http")) {
+                Log.d(TAG, "fromHowBlogs: found link $href")
+                // Check if it's a known file host
+                if (href.contains("drive.google", ignoreCase = true) ||
+                    href.contains("hubcloud", ignoreCase = true) ||
+                    href.contains("gdflix", ignoreCase = true)) {
+                    callback(
+                        newExtractorLink(
+                            source = "HowBlogs",
+                            name = "$label [HowBlogs]",
+                            url = href,
+                            type = ExtractorLinkType.VIDEO
+                        ) {
+                            this.quality = ottQuality(label)
+                            this.referer = url
+                        }
+                    )
+                    return
+                }
+            }
+        }
+
+        // Try to find link in meta refresh or JavaScript
+        val metaRefresh = doc.select("meta[http-equiv=refresh]").attr("content")
+        if (metaRefresh.contains("url=")) {
+            val redirectUrl = metaRefresh.substringAfter("url=").trim()
+            Log.d(TAG, "fromHowBlogs redirect: $redirectUrl")
+            loadExtractor(redirectUrl, url, { }, callback)
+            return
+        }
+
+        val scripts = doc.select("script").joinToString("\n")
+        val urlPattern = Regex("""(?:window\.location|location\.href)\s*=\s*['"]([^'"]+)['"]""")
+        val match = urlPattern.find(scripts)
+        if (match != null) {
+            val redirectUrl = match.groupValues[1]
+            Log.d(TAG, "fromHowBlogs JS redirect: $redirectUrl")
+            loadExtractor(redirectUrl, url, { }, callback)
+            return
+        }
+
+        Log.w(TAG, "fromHowBlogs: no redirect found")
+    } catch (e: Exception) {
+        Log.e(TAG, "fromHowBlogs failed: ${e.message}")
+    }
+}
+
+/**
+ * Tpead video host extractor.
+ *
+ * tpead.net is a video hosting service used by SkyMoviesHD for "WATCH ONLINE"
+ * links. It's similar to VidHide/VidStack and serves m3u8 or direct video files.
+ */
+private suspend fun fromTpead(
+    url: String,
+    label: String,
+    callback: (ExtractorLink) -> Unit
+) {
+    try {
+        Log.d(TAG, "fromTpead: $url")
+        val doc = app.get(url).document
+
+        // Look for video source in the page
+        val videoSources = doc.select("source[src], video[src], iframe[src]")
+        for (source in videoSources) {
+            val src = source.attr("src")
+            if (src.isNotBlank() && src.startsWith("http")) {
+                Log.d(TAG, "fromTpead: found video source $src")
+                if (src.contains(".m3u8")) {
+                    // HLS stream
+                    callback(
+                        newExtractorLink(
+                            source = "Tpead",
+                            name = "$label [Tpead]",
+                            url = src,
+                            type = ExtractorLinkType.VIDEO
+                        ) {
+                            this.quality = ottQuality(label)
+                            this.referer = url
+                        }
+                    )
+                } else {
+                    loadExtractor(src, url, { }, callback)
+                }
+                return
+            }
+        }
+
+        // Try to find video URL in scripts
+        val scripts = doc.select("script").joinToString("\n")
+        val videoPattern = Regex("""(?:file|source|url|src)\s*[:=]\s*['"]([^'"]+\.(?:m3u8|mp4|mkv))['"]""")
+        val match = videoPattern.find(scripts)
+        if (match != null) {
+            val videoUrl = match.groupValues[1]
+            Log.d(TAG, "fromTpead: found video URL in script $videoUrl")
+            if (videoUrl.contains(".m3u8")) {
+                callback(
+                    newExtractorLink(
+                        source = "Tpead",
+                        name = "$label [Tpead]",
+                        url = videoUrl,
+                        type = ExtractorLinkType.VIDEO
+                    ) {
+                        this.quality = ottQuality(label)
+                        this.referer = url
+                    }
+                )
+            } else {
+                loadExtractor(videoUrl, url, { }, callback)
+            }
+            return
+        }
+
+        Log.w(TAG, "fromTpead: no video source found")
+    } catch (e: Exception) {
+        Log.e(TAG, "fromTpead failed: ${e.message}")
+    }
+}
+
+/**
+ * SkyBap redirector bypass.
+ *
+ * skybap.site is the main domain redirector for SkyMoviesHD. It may contain
+ * links to actual file hosts or further redirects.
+ */
+private suspend fun fromSkyBap(
+    url: String,
+    label: String,
+    callback: (ExtractorLink) -> Unit
+) {
+    try {
+        Log.d(TAG, "fromSkyBap: $url")
+        val doc = app.get(url).document
+
+        // Look for download links
+        val links = doc.select("a[href]")
+        for (link in links) {
+            val href = link.attr("href")
+            if (href.isNotBlank() && href.startsWith("http")) {
+                Log.d(TAG, "fromSkyBap: found link $href")
+                // Check if it's a known file host or another redirector
+                if (href.contains("drive.google", ignoreCase = true) ||
+                    href.contains("hubcloud", ignoreCase = true) ||
+                    href.contains("gdflix", ignoreCase = true) ||
+                    href.contains("howblogs", ignoreCase = true)) {
+                    callback(
+                        newExtractorLink(
+                            source = "SkyBap",
+                            name = "$label [SkyBap]",
+                            url = href,
+                            type = ExtractorLinkType.VIDEO
+                        ) {
+                            this.quality = ottQuality(label)
+                            this.referer = url
+                        }
+                    )
+                    return
+                }
+            }
+        }
+
+        Log.w(TAG, "fromSkyBap: no download links found")
+    } catch (e: Exception) {
+        Log.e(TAG, "fromSkyBap failed: ${e.message}")
     }
 }
