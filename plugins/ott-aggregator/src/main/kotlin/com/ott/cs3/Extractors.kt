@@ -467,8 +467,8 @@ private suspend fun fromHowBlogs(
  * Tpead video host extractor.
  *
  * tpead.net is a video hosting service used by SkyMoviesHD for "WATCH ONLINE"
- * links. The URL often contains the direct video file path. If the URL ends
- * with a video extension, use it directly. Otherwise, try to extract from page.
+ * links. The URL often contains the direct video file path. We need to visit
+ * the page first to get session cookies, then use the video URL with those cookies.
  */
 private suspend fun fromTpead(
     url: String,
@@ -479,19 +479,56 @@ private suspend fun fromTpead(
         Log.d(TAG, "fromTpead: $url")
 
         // Check if URL already contains a direct video file path
-        if (url.matches(Regex(".*\\.(mp4|mkv|avi|webm)(\\?.*)?$", RegexOption.IGNORE_CASE))) {
-            Log.d(TAG, "fromTpead: URL is direct video file, using directly")
-            callback(
-                newExtractorLink(
-                    source = "Tpead",
-                    name = "$label [Tpead]",
-                    url = url,
-                    type = ExtractorLinkType.VIDEO
-                ) {
-                    this.quality = ottQuality(label)
-                    this.referer = OttDomains.baseOf(url)
-                }
-            )
+        val isDirectVideo = url.matches(Regex(".*\\.(mp4|mkv|avi|webm)(\\?.*)?$", RegexOption.IGNORE_CASE))
+
+        if (isDirectVideo) {
+            Log.d(TAG, "fromTpead: URL is direct video file, fetching page for cookies")
+
+            // Visit the page to get session cookies
+            val baseUrl = OttDomains.baseOf(url)
+            val pageUrl = url.substringBeforeLast("/")
+
+            try {
+                // Get the page to establish session
+                val pageResponse = app.get(pageUrl)
+                val cookies = pageResponse.headers.toMultimap()
+                    .filter { it.key.equals("set-cookie", ignoreCase = true) }
+                    .flatMap { it.value }
+                    .joinToString("; ") { it.substringBefore(";") }
+
+                Log.d(TAG, "fromTpead: got cookies: $cookies")
+
+                // Create ExtractorLink with cookies as headers
+                callback(
+                    newExtractorLink(
+                        source = "Tpead",
+                        name = "$label [Tpead]",
+                        url = url,
+                        type = ExtractorLinkType.VIDEO
+                    ) {
+                        this.quality = ottQuality(label)
+                        this.referer = baseUrl
+                        this.headers = mapOf(
+                            "Cookie" to cookies,
+                            "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+                        )
+                    }
+                )
+            } catch (e: Exception) {
+                Log.w(TAG, "fromTpead: failed to get cookies, trying without: ${e.message}")
+                // Fallback: use without cookies
+                callback(
+                    newExtractorLink(
+                        source = "Tpead",
+                        name = "$label [Tpead]",
+                        url = url,
+                        type = ExtractorLinkType.VIDEO
+                    ) {
+                        this.quality = ottQuality(label)
+                        this.referer = baseUrl
+                    }
+                )
+            }
             return
         }
 
