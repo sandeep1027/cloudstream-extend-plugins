@@ -232,6 +232,7 @@ private open class GdFlix : ExtractorApi() {
                     type = ExtractorLinkType.VIDEO
                 ) {
                     this.quality = quality
+                    this.referer = newUrl
                 }
             )
         }
