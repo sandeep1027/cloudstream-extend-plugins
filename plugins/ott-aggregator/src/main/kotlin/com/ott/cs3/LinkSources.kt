@@ -2,264 +2,261 @@ package com.ott.cs3
 
 import com.lagradost.api.Log
 import com.lagradost.cloudstream3.app
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
 
 private const val TAG = "OttAggregator"
 
 /**
- * Stage 2: Link Resolution from aggregation sites.
+ * SkyMoviesHD scraper for https://skymovieshd.band
  *
- * For each title discovered in Stage 1, search aggregation sites
- * (SkyMoviesHD, Vegamovies, Cinevood) for matching content with download links,
- * then resolve those links using bypass logic.
- *
- * Each aggregator site has its own scraper that knows how to navigate that
- * site's search/browse pages and extract download links. The scrapers return
- * a list of OttSource objects that can be dispatched to the bypass extractors.
+ * Site structure:
+ * - Homepage has "MOST POPULAR MOVIES" and "Latest Updated Movies"
+ * - Each movie links to a .html detail page
+ * - Detail pages have download links to file hosts (HubCloud, GdFlix, etc.)
  */
 
+/** One content item from SkyMoviesHD. */
+data class SkyMovieItem(
+    val title: String,
+    val url: String,
+    val poster: String? = null,
+    val year: Int? = null,
+    val quality: String? = null
+)
+
 /**
- * SkyMoviesHD scraper.
- *
- * SkyMoviesHD lists movies with download links to various file hosts (HubCloud,
- * GdFlix, etc.). This scraper searches for a title, extracts the download page
- * links, and collects the bypass-able shortener links.
+ * Scrape SkyMoviesHD homepage for popular and latest movies.
  */
-suspend fun scrapeSkyMoviesHD(title: String, year: Int? = null): List<OttSource> {
+suspend fun scrapeSkyMoviesHDHome(): List<SkyMovieItem> {
     return try {
         val baseUrl = OttDomains.current("skymovieshd")
-        Log.d(TAG, "scrapeSkyMoviesHD: baseUrl=$baseUrl, title=$title, year=$year")
+        Log.d(TAG, "scrapeSkyMoviesHDHome: baseUrl=$baseUrl")
 
-        // Search URL - SkyMoviesHD typically uses /?s=query format
-        val searchQuery = if (year != null) "$title $year" else title
-        val url = "$baseUrl/?s=${searchQuery.replace(" ", "+")}"
+        val doc = app.get(baseUrl).document
+        val items = mutableListOf<SkyMovieItem>()
 
-        val doc = app.get(url).document
-        val sources = mutableListOf<OttSource>()
+        // Extract movie links from the page
+        // Pattern: <a href="/movie/Title-(Year)-format-size.html">
+        val movieLinks = doc.select("a[href*=/movie/]")
 
-        // Find post links
-        val postLinks = doc.select("article a[href], .post-title a[href], h2 a[href]")
+        Log.d(TAG, "scrapeSkyMoviesHDHome: found ${movieLinks.size} movie links")
 
-        Log.d(TAG, "scrapeSkyMoviesHD: found ${postLinks.size} post links")
+        val seenUrls = mutableSetOf<String>()
 
-        // For each matching post, extract download links
-        postLinks.take(5).forEach { link ->
-            val href = link.attr("href")
-            if (href.isNotBlank() && href.contains(baseUrl)) {
-                try {
-                    val postDoc = app.get(href).document
-                    val downloadLinks = extractDownloadLinks(postDoc, href)
-                    sources.addAll(downloadLinks)
-                } catch (e: Exception) {
-                    Log.w(TAG, "scrapeSkyMoviesHD: failed to fetch post $href: ${e.message}")
-                }
-            }
-        }
-
-        Log.d(TAG, "scrapeSkyMoviesHD: extracted ${sources.size} sources")
-        sources
-    } catch (e: Exception) {
-        Log.e(TAG, "scrapeSkyMoviesHD failed: ${e.message}")
-        emptyList()
-    }
-}
-
-/**
- * Vegamovies scraper.
- *
- * Vegamovies lists movies and web series with download links to various file
- * hosts. This scraper searches for a title and extracts download links.
- */
-suspend fun scrapeVegamovies(title: String, year: Int? = null): List<OttSource> {
-    return try {
-        val baseUrl = OttDomains.current("vegamovies")
-        Log.d(TAG, "scrapeVegamovies: baseUrl=$baseUrl, title=$title, year=$year")
-
-        val searchQuery = if (year != null) "$title $year" else title
-        val url = "$baseUrl/?s=${searchQuery.replace(" ", "+")}"
-
-        val doc = app.get(url).document
-        val sources = mutableListOf<OttSource>()
-
-        val postLinks = doc.select("article a[href], .entry-title a[href], h2 a[href]")
-
-        Log.d(TAG, "scrapeVegamovies: found ${postLinks.size} post links")
-
-        postLinks.take(5).forEach { link ->
-            val href = link.attr("href")
-            if (href.isNotBlank() && href.contains(baseUrl)) {
-                try {
-                    val postDoc = app.get(href).document
-                    val downloadLinks = extractDownloadLinks(postDoc, href)
-                    sources.addAll(downloadLinks)
-                } catch (e: Exception) {
-                    Log.w(TAG, "scrapeVegamovies: failed to fetch post $href: ${e.message}")
-                }
-            }
-        }
-
-        Log.d(TAG, "scrapeVegamovies: extracted ${sources.size} sources")
-        sources
-    } catch (e: Exception) {
-        Log.e(TAG, "scrapeVegamovies failed: ${e.message}")
-        emptyList()
-    }
-}
-
-/**
- * Cinevood scraper.
- *
- * Cinevood lists movies with download links to various file hosts. This scraper
- * searches for a title and extracts download links.
- */
-suspend fun scrapeCinevood(title: String, year: Int? = null): List<OttSource> {
-    return try {
-        val baseUrl = OttDomains.current("cinevood")
-        Log.d(TAG, "scrapeCinevood: baseUrl=$baseUrl, title=$title, year=$year")
-
-        val searchQuery = if (year != null) "$title $year" else title
-        val url = "$baseUrl/?s=${searchQuery.replace(" ", "+")}"
-
-        val doc = app.get(url).document
-        val sources = mutableListOf<OttSource>()
-
-        val postLinks = doc.select("article a[href], .post-title a[href], h2 a[href]")
-
-        Log.d(TAG, "scrapeCinevood: found ${postLinks.size} post links")
-
-        postLinks.take(5).forEach { link ->
-            val href = link.attr("href")
-            if (href.isNotBlank() && href.contains(baseUrl)) {
-                try {
-                    val postDoc = app.get(href).document
-                    val downloadLinks = extractDownloadLinks(postDoc, href)
-                    sources.addAll(downloadLinks)
-                } catch (e: Exception) {
-                    Log.w(TAG, "scrapeCinevood: failed to fetch post $href: ${e.message}")
-                }
-            }
-        }
-
-        Log.d(TAG, "scrapeCinevood: extracted ${sources.size} sources")
-        sources
-    } catch (e: Exception) {
-        Log.e(TAG, "scrapeCinevood failed: ${e.message}")
-        emptyList()
-    }
-}
-
-/**
- * Extract download links from a post page.
- *
- * Aggregation sites typically list download buttons/links that point to file
- * hosts (HubCloud, GdFlix, FastDlServer, etc.). This function extracts those
- * links and returns them as OttSource objects.
- */
-private fun extractDownloadLinks(doc: org.jsoup.nodes.Document, baseUrl: String): List<OttSource> {
-    val sources = mutableListOf<OttSource>()
-
-    // Common patterns for download links on aggregation sites
-    val selectors = listOf(
-        "a[href*='hubcloud']",
-        "a[href*='gdflix']",
-        "a[href*='gdlink']",
-        "a[href*='fastdlserver']",
-        "a[href*='linksmod']",
-        "a[href*='sidexfee']",
-        "a[href*='hubdrive']",
-        "a[href*='hblinks']",
-        "a.download",
-        "a.btn-download",
-        "div.download a",
-        "div.entry-content a"
-    )
-
-    val seenUrls = mutableSetOf<String>()
-
-    for (selector in selectors) {
-        val links = doc.select(selector)
-        for (link in links) {
+        movieLinks.forEach { link ->
             val href = link.attr("href")
             if (href.isNotBlank() && !seenUrls.contains(href)) {
                 seenUrls.add(href)
 
-                // Determine quality from nearby text or link text
-                val linkText = link.text()
-                val quality = ottQuality(linkText)
+                val fullUrl = if (href.startsWith("http")) href else "$baseUrl$href"
+                val title = link.text().trim()
 
-                sources.add(
-                    OttSource(
-                        url = href,
-                        label = linkText.ifBlank { "download" },
-                        quality = quality
+                if (title.isNotBlank()) {
+                    // Extract year from title if present
+                    val yearMatch = Regex("""\((\d{4})\)""").find(title)
+                    val year = yearMatch?.groupValues?.get(1)?.toIntOrNull()
+
+                    // Extract quality from title
+                    val quality = when {
+                        title.contains("1080p", ignoreCase = true) -> "1080p"
+                        title.contains("720p", ignoreCase = true) -> "720p"
+                        title.contains("480p", ignoreCase = true) -> "480p"
+                        else -> null
+                    }
+
+                    // Try to get poster image
+                    val img = link.selectFirst("img")
+                    val poster = img?.attr("src")
+
+                    items.add(
+                        SkyMovieItem(
+                            title = title,
+                            url = fullUrl,
+                            poster = poster,
+                            year = year,
+                            quality = quality
+                        )
                     )
-                )
+                }
             }
         }
-    }
 
-    return sources
-}
-
-/**
- * Search all aggregation sites in parallel and combine results.
- *
- * Used in Stage 2 to find playable sources for a title discovered in Stage 1.
- * Each site is searched concurrently, and the results are combined into a single
- * list of OttSource objects.
- */
-suspend fun searchAllAggregationSites(title: String, year: Int? = null): List<OttSource> {
-    return coroutineScope {
-        val jobs = listOf(
-            async { scrapeSkyMoviesHD(title, year) },
-            async { scrapeVegamovies(title, year) },
-            async { scrapeCinevood(title, year) }
-        )
-        jobs.awaitAll().flatten()
+        Log.d(TAG, "scrapeSkyMoviesHDHome: extracted ${items.size} items")
+        items
+    } catch (e: Exception) {
+        Log.e(TAG, "scrapeSkyMoviesHDHome failed: ${e.message}")
+        emptyList()
     }
 }
 
 /**
- * Title matching and normalization.
- *
- * When searching aggregation sites for a title discovered on an OTT platform,
- * the titles may not match exactly. This function normalizes titles for
- * comparison: lowercase, remove year, remove special chars.
+ * Scrape SkyMoviesHD category page.
  */
-fun normalizeTitle(title: String): String {
-    return title
-        .lowercase()
-        .replace(Regex("""\(\d{4}\)"""), "") // Remove (year)
-        .replace(Regex("""\d{4}"""), "") // Remove standalone year
-        .replace(Regex("""[^a-z0-9\s]"""), "") // Remove special chars
-        .replace(Regex("""\s+"""), " ") // Normalize whitespace
-        .trim()
+suspend fun scrapeSkyMoviesHDCategory(categoryPath: String): List<SkyMovieItem> {
+    return try {
+        val baseUrl = OttDomains.current("skymovieshd")
+        val url = "$baseUrl$categoryPath"
+        Log.d(TAG, "scrapeSkyMoviesHDCategory: url=$url")
+
+        val doc = app.get(url).document
+        val items = mutableListOf<SkyMovieItem>()
+
+        val movieLinks = doc.select("a[href*=/movie/]")
+
+        Log.d(TAG, "scrapeSkyMoviesHDCategory: found ${movieLinks.size} movie links")
+
+        val seenUrls = mutableSetOf<String>()
+
+        movieLinks.forEach { link ->
+            val href = link.attr("href")
+            if (href.isNotBlank() && !seenUrls.contains(href)) {
+                seenUrls.add(href)
+
+                val fullUrl = if (href.startsWith("http")) href else "$baseUrl$href"
+                val title = link.text().trim()
+
+                if (title.isNotBlank()) {
+                    val yearMatch = Regex("""\((\d{4})\)""").find(title)
+                    val year = yearMatch?.groupValues?.get(1)?.toIntOrNull()
+
+                    val quality = when {
+                        title.contains("1080p", ignoreCase = true) -> "1080p"
+                        title.contains("720p", ignoreCase = true) -> "720p"
+                        title.contains("480p", ignoreCase = true) -> "480p"
+                        else -> null
+                    }
+
+                    val img = link.selectFirst("img")
+                    val poster = img?.attr("src")
+
+                    items.add(
+                        SkyMovieItem(
+                            title = title,
+                            url = fullUrl,
+                            poster = poster,
+                            year = year,
+                            quality = quality
+                        )
+                    )
+                }
+            }
+        }
+
+        Log.d(TAG, "scrapeSkyMoviesHDCategory: extracted ${items.size} items")
+        items
+    } catch (e: Exception) {
+        Log.e(TAG, "scrapeSkyMoviesHDCategory failed: ${e.message}")
+        emptyList()
+    }
 }
 
 /**
- * Check if two titles match (fuzzy matching).
- *
- * Returns true if the normalized titles are similar enough to be considered the
- * same content. Uses simple substring matching for now.
+ * Search SkyMoviesHD for a specific title.
  */
-fun titlesMatch(title1: String, title2: String): Boolean {
-    val norm1 = normalizeTitle(title1)
-    val norm2 = normalizeTitle(title2)
+suspend fun searchSkyMoviesHD(query: String): List<SkyMovieItem> {
+    return try {
+        val baseUrl = OttDomains.current("skymovieshd")
+        val url = "$baseUrl/search.php?search=${query.replace(" ", "+")}&cat=All"
+        Log.d(TAG, "searchSkyMoviesHD: url=$url")
 
-    // Exact match after normalization
-    if (norm1 == norm2) return true
+        val doc = app.get(url).document
+        val items = mutableListOf<SkyMovieItem>()
 
-    // Substring match (one contains the other)
-    if (norm1.contains(norm2) || norm2.contains(norm1)) return true
+        val movieLinks = doc.select("a[href*=/movie/]")
 
-    // Word overlap (at least 70% of words match)
-    val words1 = norm1.split(" ").toSet()
-    val words2 = norm2.split(" ").toSet()
-    val overlap = words1.intersect(words2).size
-    val total = (words1 + words2).size
-    if (total > 0 && overlap.toFloat() / total >= 0.7f) return true
+        Log.d(TAG, "searchSkyMoviesHD: found ${movieLinks.size} movie links")
 
-    return false
+        val seenUrls = mutableSetOf<String>()
+
+        movieLinks.forEach { link ->
+            val href = link.attr("href")
+            if (href.isNotBlank() && !seenUrls.contains(href)) {
+                seenUrls.add(href)
+
+                val fullUrl = if (href.startsWith("http")) href else "$baseUrl$href"
+                val title = link.text().trim()
+
+                if (title.isNotBlank()) {
+                    val yearMatch = Regex("""\((\d{4})\)""").find(title)
+                    val year = yearMatch?.groupValues?.get(1)?.toIntOrNull()
+
+                    val quality = when {
+                        title.contains("1080p", ignoreCase = true) -> "1080p"
+                        title.contains("720p", ignoreCase = true) -> "720p"
+                        title.contains("480p", ignoreCase = true) -> "480p"
+                        else -> null
+                    }
+
+                    val img = link.selectFirst("img")
+                    val poster = img?.attr("src")
+
+                    items.add(
+                        SkyMovieItem(
+                            title = title,
+                            url = fullUrl,
+                            poster = poster,
+                            year = year,
+                            quality = quality
+                        )
+                    )
+                }
+            }
+        }
+
+        Log.d(TAG, "searchSkyMoviesHD: extracted ${items.size} items")
+        items
+    } catch (e: Exception) {
+        Log.e(TAG, "searchSkyMoviesHD failed: ${e.message}")
+        emptyList()
+    }
+}
+
+/**
+ * Extract download links from a SkyMoviesHD movie detail page.
+ */
+suspend fun extractSkyMoviesHDDownloadLinks(movieUrl: String): List<OttSource> {
+    return try {
+        Log.d(TAG, "extractSkyMoviesHDDownloadLinks: url=$movieUrl")
+
+        val doc = app.get(movieUrl).document
+        val sources = mutableListOf<OttSource>()
+
+        // Find all download links on the page
+        val downloadLinks = doc.select("a[href]")
+
+        Log.d(TAG, "extractSkyMoviesHDDownloadLinks: found ${downloadLinks.size} total links")
+
+        val seenUrls = mutableSetOf<String>()
+
+        downloadLinks.forEach { link ->
+            val href = link.attr("href")
+            if (href.isNotBlank() && !seenUrls.contains(href)) {
+                // Check if it's a bypass-able link
+                if (href.contains("hubcloud", ignoreCase = true) ||
+                    href.contains("gdflix", ignoreCase = true) ||
+                    href.contains("gdlink", ignoreCase = true) ||
+                    href.contains("fastdlserver", ignoreCase = true) ||
+                    href.contains("linksmod", ignoreCase = true) ||
+                    href.contains("sidexfee", ignoreCase = true)) {
+
+                    seenUrls.add(href)
+                    val linkText = link.text()
+                    val quality = ottQuality(linkText)
+
+                    sources.add(
+                        OttSource(
+                            url = href,
+                            label = linkText.ifBlank { "download" },
+                            quality = quality
+                        )
+                    )
+                }
+            }
+        }
+
+        Log.d(TAG, "extractSkyMoviesHDDownloadLinks: extracted ${sources.size} download sources")
+        sources
+    } catch (e: Exception) {
+        Log.e(TAG, "extractSkyMoviesHDDownloadLinks failed: ${e.message}")
+        emptyList()
+    }
 }

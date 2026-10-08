@@ -5,29 +5,18 @@ import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.AppUtils.parseJson
 import com.lagradost.cloudstream3.utils.AppUtils.toJson
 import com.lagradost.cloudstream3.utils.ExtractorLink
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.supervisorScope
 
 private const val TAG = "OttAggregator"
 
 /**
- * OTT Metadata Aggregator — combines metadata from OTT platforms with playable
- * sources from aggregation sites.
+ * OTT Metadata Aggregator — focused on SkyMoviesHD (skymovieshd.band)
  *
- * Two-stage flow:
- * 1. Stage 1 (Metadata Discovery): Scrape OTT platforms (Prime Video, ZEE5,
- *    AirtelXstream, AppleTV+) for content listings and metadata via OpenGraph.
- * 2. Stage 2 (Link Resolution): For each title, search aggregation sites
- *    (SkyMoviesHD, Vegamovies, Cinevood) for matching content with download
- *    links, then resolve those links using bypass logic.
- *
- * This provides rich metadata from official OTT platforms while finding playable
- * sources from aggregation sites that already have bypass-able links.
+ * Scrapes SkyMoviesHD for content listings and download links, then resolves
+ * those links using bypass logic (HubCloud, GdFlix, etc.).
  */
 class OttAggregatorProvider : MainAPI() {
     override var name = "OttAggregator"
-    override var mainUrl = "https://www.primevideo.com" // Default, overridden by domains.json
+    override var mainUrl = "https://skymovieshd.band"
     override var lang = "hi"
     override val hasMainPage = true
     override val hasDownloadSupport = true
@@ -37,45 +26,32 @@ class OttAggregatorProvider : MainAPI() {
     )
 
     init {
-        // Read the current domain from domains.json at load time.
         kotlinx.coroutines.runBlocking {
-            mainUrl = OttDomains.current("primevideo")
+            mainUrl = OttDomains.current("skymovieshd")
         }
     }
 
     override val mainPage = mainPageOf(
         "" to "Home",
-        "primevideo" to "Prime Video",
-        "zee5" to "ZEE5",
-        "airtelxstream" to "AirtelXstream",
-        "appletv" to "AppleTV+"
+        "/category/bollywood-movies/" to "Bollywood",
+        "/category/hollywood-english-movies/" to "Hollywood English",
+        "/category/hollywood-hindi-dubbed-movies/" to "Hollywood Hindi",
+        "/category/south-indian-hindi-dubbed-movies/" to "South Hindi Dubbed",
+        "/category/web-series/" to "Web Series"
     )
 
     override suspend fun getMainPage(
         page: Int,
         request: MainPageRequest
     ): HomePageResponse? {
-        if (page > 1) return null // Single-slice rows
+        if (page > 1) return null
 
         Log.d(TAG, "getMainPage: ${request.name} (${request.data})")
 
-        val items = when (request.data) {
-            "primevideo" -> scrapePrimeVideo()
-            "zee5" -> scrapeZee5()
-            "airtelxstream" -> scrapeAirtelXstream()
-            "appletv" -> scrapeAppleTV()
-            else -> {
-                // Home: combine all platforms
-                supervisorScope {
-                    val jobs = listOf(
-                        async { scrapePrimeVideo() },
-                        async { scrapeZee5() },
-                        async { scrapeAirtelXstream() },
-                        async { scrapeAppleTV() }
-                    )
-                    jobs.awaitAll().flatten()
-                }
-            }
+        val items = if (request.data.isBlank()) {
+            scrapeSkyMoviesHDHome()
+        } else {
+            scrapeSkyMoviesHDCategory(request.data)
         }
 
         if (items.isEmpty()) return null
@@ -85,15 +61,14 @@ class OttAggregatorProvider : MainAPI() {
     }
 
     override suspend fun search(query: String, page: Int): SearchResponseList? {
-        if (page > 1) return null // Single-slice results
+        if (page > 1) return null
 
         Log.d(TAG, "search: query=$query")
 
-        // Search all OTT platforms in parallel
-        val items = searchAllOttPlatforms(query)
+        val items = searchSkyMoviesHD(query)
 
         if (items.isEmpty()) {
-            Log.d(TAG, "search: no results from OTT platforms")
+            Log.d(TAG, "search: no results")
             return null
         }
 
@@ -105,70 +80,30 @@ class OttAggregatorProvider : MainAPI() {
     override suspend fun load(url: String): LoadResponse? {
         Log.d(TAG, "load: url=$url")
 
-        // Stage 1: Extract metadata from OTT platform
-        val metadata = extractOpenGraph(url)
-        if (metadata == null) {
-            Log.e(TAG, "load: failed to extract metadata from $url")
+        // Extract download links from the movie detail page
+        val sources = extractSkyMoviesHDDownloadLinks(url)
+
+        if (sources.isEmpty()) {
+            Log.w(TAG, "load: no download links found")
             return null
         }
 
-        Log.d(TAG, "load: title='${metadata.title}', poster='${metadata.image.take(50)}...'")
+        Log.d(TAG, "load: found ${sources.size} download sources")
 
-        val title = metadata.title
-        val posterUrl = metadata.image
-        val description = metadata.description
-        val isSeries = url.contains("series", ignoreCase = true) ||
-                       url.contains("tv-shows", ignoreCase = true) ||
-                       url.contains("title", ignoreCase = true)
+        // Extract title from URL or page
+        val title = url.substringAfterLast("/movie/")
+            .substringBefore(".html")
+            .replace("-", " ")
+            .trim()
 
-        // Extract year from title or URL if possible
-        val year = Regex("""\((\d{4})\)""").find(title)?.groupValues?.get(1)?.toIntOrNull()
-            ?: Regex("""(\d{4})""").find(url)?.groupValues?.get(1)?.toIntOrNull()
+        // Try to get poster from the page
+        val doc = app.get(url).document
+        val poster = doc.selectFirst("img[src*=http]")?.attr("src")
 
-        // Stage 2: Search aggregation sites for playable sources
-        Log.d(TAG, "load: searching aggregation sites for '$title'")
-        val sources = searchAllAggregationSites(title, year)
-
-        if (sources.isEmpty()) {
-            Log.w(TAG, "load: no playable sources found for '$title'")
-            // Return metadata-only response (user can still see the poster/description)
-            return if (isSeries) {
-                newTvSeriesLoadResponse(title, url, TvType.TvSeries, emptyList()) {
-                    this.posterUrl = posterUrl
-                    this.plot = description
-                }
-            } else {
-                newMovieLoadResponse(title, url, TvType.Movie, "") {
-                    this.posterUrl = posterUrl
-                    this.plot = description
-                }
-            }
-        }
-
-        Log.d(TAG, "load: found ${sources.size} playable sources")
-
-        // Pass sources as JSON data to loadLinks
         val dataJson = sources.toJson()
 
-        return if (isSeries) {
-            // For series, create a single "episode" with all sources
-            val episodes = listOf(
-                newEpisode(dataJson) {
-                    this.name = "Episode 1"
-                    this.season = 1
-                    this.episode = 1
-                    this.posterUrl = posterUrl
-                }
-            )
-            newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodes) {
-                this.posterUrl = posterUrl
-                this.plot = description
-            }
-        } else {
-            newMovieLoadResponse(title, url, TvType.Movie, dataJson) {
-                this.posterUrl = posterUrl
-                this.plot = description
-            }
+        return newMovieLoadResponse(title, url, TvType.Movie, dataJson) {
+            this.posterUrl = poster
         }
     }
 
@@ -199,23 +134,14 @@ class OttAggregatorProvider : MainAPI() {
 
         Log.d(TAG, "loadLinks: processing ${sources.size} sources")
 
-        // Dispatch sources to bypass extractors
         emitOttSources(sources, subtitleCallback, callback)
 
         return true
     }
 
-    // Helper extensions
-
-    private fun ContentItem.toSearchResponse(): SearchResponse {
-        return if (isSeries) {
-            newTvSeriesSearchResponse(title, url) {
-                this.posterUrl = poster
-            }
-        } else {
-            newMovieSearchResponse(title, url, TvType.Movie) {
-                this.posterUrl = poster
-            }
+    private fun SkyMovieItem.toSearchResponse(): SearchResponse {
+        return newMovieSearchResponse(title, url, TvType.Movie) {
+            this.posterUrl = poster
         }
     }
 }
