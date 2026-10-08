@@ -109,7 +109,13 @@ private class FastDlServer : ExtractorApi() {
         val location = response.headers["location"]
         Log.d(TAG, "FastDlServer location: $location")
         if (location != null) {
-            loadExtractor(location, referer, subtitleCallback, callback)
+            // If the redirect goes to gdflix, use our GdFlix extractor directly
+            if (location.contains("gdflix", ignoreCase = true) || location.contains("gdlink", ignoreCase = true)) {
+                Log.d(TAG, "FastDlServer: redirecting to GdFlix")
+                GdFlix().getUrl(location, referer, subtitleCallback, callback)
+            } else {
+                loadExtractor(location, referer, subtitleCallback, callback)
+            }
         } else {
             Log.w(TAG, "FastDlServer: no location header found")
         }
