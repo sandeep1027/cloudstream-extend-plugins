@@ -63,9 +63,24 @@ suspend fun scrapeSkyMoviesHDHome(): List<SkyMovieItem> {
                         else -> null
                     }
 
-                    // Try to get poster image
+                    // Try to get poster image - check multiple locations
+                    var poster: String? = null
+                    // First check for img inside the link
                     val img = link.selectFirst("img")
-                    val poster = img?.attr("src")
+                    poster = img?.attr("src")
+
+                    // If not found, check parent container
+                    if (poster.isNullOrBlank()) {
+                        val parent = link.parent()
+                        val parentImg = parent?.selectFirst("img[src*=http], img[data-src*=http]")
+                        poster = parentImg?.attr("src") ?: parentImg?.attr("data-src")
+                    }
+
+                    // If still not found, look for nearby img tags
+                    if (poster.isNullOrBlank()) {
+                        val nearbyImg = link.closest("div, li, article")?.selectFirst("img[src*=http]")
+                        poster = nearbyImg?.attr("src")
+                    }
 
                     items.add(
                         SkyMovieItem(
@@ -97,7 +112,8 @@ suspend fun scrapeSkyMoviesHDCategory(categoryPath: String): List<SkyMovieItem> 
         val url = "$baseUrl$categoryPath"
         Log.d(TAG, "scrapeSkyMoviesHDCategory: url=$url")
 
-        val doc = app.get(url).document
+        // Use documentLarge for category pages which may be large
+        val doc = app.get(url).documentLarge
         val items = mutableListOf<SkyMovieItem>()
 
         val movieLinks = doc.select("a[href*=/movie/]")
@@ -125,8 +141,21 @@ suspend fun scrapeSkyMoviesHDCategory(categoryPath: String): List<SkyMovieItem> 
                         else -> null
                     }
 
+                    // Try to get poster image - check multiple locations
+                    var poster: String? = null
                     val img = link.selectFirst("img")
-                    val poster = img?.attr("src")
+                    poster = img?.attr("src")
+
+                    if (poster.isNullOrBlank()) {
+                        val parent = link.parent()
+                        val parentImg = parent?.selectFirst("img[src*=http], img[data-src*=http]")
+                        poster = parentImg?.attr("src") ?: parentImg?.attr("data-src")
+                    }
+
+                    if (poster.isNullOrBlank()) {
+                        val nearbyImg = link.closest("div, li, article")?.selectFirst("img[src*=http]")
+                        poster = nearbyImg?.attr("src")
+                    }
 
                     items.add(
                         SkyMovieItem(
@@ -186,8 +215,21 @@ suspend fun searchSkyMoviesHD(query: String): List<SkyMovieItem> {
                         else -> null
                     }
 
+                    // Try to get poster image - check multiple locations
+                    var poster: String? = null
                     val img = link.selectFirst("img")
-                    val poster = img?.attr("src")
+                    poster = img?.attr("src")
+
+                    if (poster.isNullOrBlank()) {
+                        val parent = link.parent()
+                        val parentImg = parent?.selectFirst("img[src*=http], img[data-src*=http]")
+                        poster = parentImg?.attr("src") ?: parentImg?.attr("data-src")
+                    }
+
+                    if (poster.isNullOrBlank()) {
+                        val nearbyImg = link.closest("div, li, article")?.selectFirst("img[src*=http]")
+                        poster = nearbyImg?.attr("src")
+                    }
 
                     items.add(
                         SkyMovieItem(

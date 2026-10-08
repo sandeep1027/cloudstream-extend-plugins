@@ -98,9 +98,22 @@ class OttAggregatorProvider : MainAPI() {
             .replace("-", " ")
             .trim()
 
-        // Try to get poster from the page
+        // Try to get poster from the page - check multiple locations
         val doc = app.get(url).document
-        val poster = doc.selectFirst("img[src*=http]")?.attr("src")
+        var poster: String? = null
+
+        // First try to find poster in common locations
+        poster = doc.selectFirst("img[src*=media-amazon]")?.attr("src")
+            ?: doc.selectFirst("img[src*=imdb]")?.attr("src")
+            ?: doc.selectFirst(".movie-poster img, .poster img, [class*=poster] img")?.attr("src")
+            ?: doc.selectFirst("img[src*=http]")?.attr("src")
+
+        // Try data-src attribute as well
+        if (poster.isNullOrBlank()) {
+            poster = doc.selectFirst("img[data-src*=http]")?.attr("data-src")
+        }
+
+        Log.d(TAG, "load: poster=$poster")
 
         val dataJson = sources.toJson()
 

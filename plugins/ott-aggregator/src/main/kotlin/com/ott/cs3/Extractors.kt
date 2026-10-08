@@ -429,7 +429,18 @@ private suspend fun fromHowBlogs(
                     href.contains("megaup", ignoreCase = true) ||
                     href.contains("uploadflix", ignoreCase = true) ||
                     href.contains("voe.sx", ignoreCase = true) ||
-                    href.contains("pixeldrain", ignoreCase = true) -> {
+                    href.contains("pixeldrain", ignoreCase = true) ||
+                    href.contains("send.cm", ignoreCase = true) ||
+                    href.contains("racaty", ignoreCase = true) ||
+                    href.contains("uploadbox", ignoreCase = true) ||
+                    href.contains("dropgalaxy", ignoreCase = true) ||
+                    href.contains("hubdrive", ignoreCase = true) ||
+                    href.contains("drivehub", ignoreCase = true) ||
+                    href.contains("sharer.pw", ignoreCase = true) ||
+                    href.contains("gdtot", ignoreCase = true) ||
+                    href.contains("hubfiles", ignoreCase = true) ||
+                    href.contains("w4files", ignoreCase = true) ||
+                    href.contains("we.tl", ignoreCase = true) -> {
                         foundLinks.add(href)
                         Log.d(TAG, "fromHowBlogs: dispatching to loadExtractor: $href")
                         loadExtractor(href, url, { }, callback)
