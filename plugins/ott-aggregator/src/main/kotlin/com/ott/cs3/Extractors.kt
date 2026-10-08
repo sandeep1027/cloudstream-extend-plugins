@@ -467,8 +467,9 @@ private suspend fun fromHowBlogs(
  * Tpead video host extractor.
  *
  * tpead.net is a video hosting service used by SkyMoviesHD for "WATCH ONLINE"
- * links. The URL often contains the direct video file path. We need to visit
- * the page first to get session cookies, then use the video URL with those cookies.
+ * links. The URLs look like direct video files but are actually pages that
+ * contain the video player. We need to visit the page and extract the real
+ * video URL from it.
  */
 private suspend fun fromTpead(
     url: String,
@@ -478,110 +479,81 @@ private suspend fun fromTpead(
     try {
         Log.d(TAG, "fromTpead: $url")
 
-        // Check if URL already contains a direct video file path
-        val isDirectVideo = url.matches(Regex(".*\\.(mp4|mkv|avi|webm)(\\?.*)?$", RegexOption.IGNORE_CASE))
-
-        if (isDirectVideo) {
-            Log.d(TAG, "fromTpead: URL is direct video file, fetching page for cookies")
-
-            // Visit the page to get session cookies
-            val baseUrl = OttDomains.baseOf(url)
-            val pageUrl = url.substringBeforeLast("/")
-
-            try {
-                // Get the page to establish session
-                val pageResponse = app.get(pageUrl)
-                val cookies = pageResponse.headers.toMultimap()
-                    .filter { it.key.equals("set-cookie", ignoreCase = true) }
-                    .flatMap { it.value }
-                    .joinToString("; ") { it.substringBefore(";") }
-
-                Log.d(TAG, "fromTpead: got cookies: $cookies")
-
-                // Create ExtractorLink with cookies as headers
-                callback(
-                    newExtractorLink(
-                        source = "Tpead",
-                        name = "$label [Tpead]",
-                        url = url,
-                        type = ExtractorLinkType.VIDEO
-                    ) {
-                        this.quality = ottQuality(label)
-                        this.referer = baseUrl
-                        this.headers = mapOf(
-                            "Cookie" to cookies,
-                            "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-                        )
-                    }
-                )
-            } catch (e: Exception) {
-                Log.w(TAG, "fromTpead: failed to get cookies, trying without: ${e.message}")
-                // Fallback: use without cookies
-                callback(
-                    newExtractorLink(
-                        source = "Tpead",
-                        name = "$label [Tpead]",
-                        url = url,
-                        type = ExtractorLinkType.VIDEO
-                    ) {
-                        this.quality = ottQuality(label)
-                        this.referer = baseUrl
-                    }
-                )
-            }
-            return
-        }
-
+        // Visit the page to get the actual video URL
         val doc = app.get(url).document
+        val baseUrl = OttDomains.baseOf(url)
 
         // Look for video source in the page
-        val videoSources = doc.select("source[src], video[src], iframe[src]")
+        val videoSources = doc.select("source[src], video[src]")
         for (source in videoSources) {
             val src = source.attr("src")
             if (src.isNotBlank() && src.startsWith("http")) {
                 Log.d(TAG, "fromTpead: found video source $src")
-                if (src.contains(".m3u8")) {
-                    // HLS stream
-                    callback(
-                        newExtractorLink(
-                            source = "Tpead",
-                            name = "$label [Tpead]",
-                            url = src,
-                            type = ExtractorLinkType.VIDEO
-                        ) {
-                            this.quality = ottQuality(label)
-                            this.referer = url
-                        }
-                    )
-                } else {
-                    loadExtractor(src, url, { }, callback)
-                }
-                return
-            }
-        }
-
-        // Try to find video URL in scripts
-        val scripts = doc.select("script").joinToString("\n")
-        val videoPattern = Regex("""(?:file|source|url|src)\s*[:=]\s*['"]([^'"]+\.(?:m3u8|mp4|mkv))['"]""")
-        val match = videoPattern.find(scripts)
-        if (match != null) {
-            val videoUrl = match.groupValues[1]
-            Log.d(TAG, "fromTpead: found video URL in script $videoUrl")
-            if (videoUrl.contains(".m3u8")) {
                 callback(
                     newExtractorLink(
                         source = "Tpead",
                         name = "$label [Tpead]",
-                        url = videoUrl,
+                        url = src,
                         type = ExtractorLinkType.VIDEO
                     ) {
                         this.quality = ottQuality(label)
                         this.referer = url
                     }
                 )
-            } else {
-                loadExtractor(videoUrl, url, { }, callback)
+                return
             }
+        }
+
+        // Look for iframe with video
+        val iframes = doc.select("iframe[src]")
+        for (iframe in iframes) {
+            val src = iframe.attr("src")
+            if (src.isNotBlank() && src.startsWith("http")) {
+                Log.d(TAG, "fromTpead: found iframe $src")
+                // Try to load the iframe content
+                loadExtractor(src, url, { }, callback)
+                return
+            }
+        }
+
+        // Try to find video URL in scripts
+        val scripts = doc.select("script").joinToString("\n")
+        val videoPattern = Regex("""(?:file|source|url|src|video_url|stream_url)\s*[:=]\s*['"]([^'"]+\.(?:m3u8|mp4|mkv))['"]""")
+        val match = videoPattern.find(scripts)
+        if (match != null) {
+            val videoUrl = match.groupValues[1]
+            Log.d(TAG, "fromTpead: found video URL in script $videoUrl")
+            callback(
+                newExtractorLink(
+                    source = "Tpead",
+                    name = "$label [Tpead]",
+                    url = videoUrl,
+                    type = ExtractorLinkType.VIDEO
+                ) {
+                    this.quality = ottQuality(label)
+                    this.referer = url
+                }
+            )
+            return
+        }
+
+        // Try to find any .m3u8 or .mp4 URL in the page
+        val anyVideoPattern = Regex("""(https?://[^"'\s]+\.(?:m3u8|mp4|mkv)[^"'\s]*)""")
+        val anyMatch = anyVideoPattern.find(doc.html())
+        if (anyMatch != null) {
+            val videoUrl = anyMatch.groupValues[1]
+            Log.d(TAG, "fromTpead: found video URL in page $videoUrl")
+            callback(
+                newExtractorLink(
+                    source = "Tpead",
+                    name = "$label [Tpead]",
+                    url = videoUrl,
+                    type = ExtractorLinkType.VIDEO
+                ) {
+                    this.quality = ottQuality(label)
+                    this.referer = url
+                }
+            )
             return
         }
 
