@@ -45,5 +45,6 @@ include(
     ":plugins:hdhub4u",
     ":plugins:bollyflix",
     ":plugins:prowlarr",
-    ":plugins:yts"
+    ":plugins:yts",
+    ":plugins:ott-aggregator"
 )

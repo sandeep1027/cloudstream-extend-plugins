@@ -1,0 +1,23 @@
+[
+  {
+    "url": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/ott-aggregator/repo/OttAggregator.cs3",
+    "status": 1,
+    "version": 1,
+    "apiVersion": 1,
+    "name": "OttAggregator",
+    "internalName": "OttAggregator",
+    "authors": [
+      "sandeep1027"
+    ],
+    "description": "OTT Metadata Aggregator: combines metadata from Prime Video, ZEE5, AirtelXstream, AppleTV+ with playable sources from SkyMoviesHD, Vegamovies, Cinevood. Resolves shortened links via HubCloud, GdFlix, and other bypass logic.",
+    "repositoryUrl": null,
+    "tvTypes": [
+      "Movie",
+      "TvSeries"
+    ],
+    "language": "hi",
+    "iconUrl": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/ott-aggregator/repo/icon.png",
+    "fileSize": "45897",
+    "fileHash": "sha256-4062517fede41899b08fe35ea3b01639d9be8b07edd9409cea937bbcd63a8725"
+  }
+]

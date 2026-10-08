@@ -1,0 +1,6 @@
+{
+  "name": "OttAggregator",
+  "pluginClassName": "com.ott.cs3.OttAggregatorPlugin",
+  "requiresResources": false,
+  "version": "1"
+}

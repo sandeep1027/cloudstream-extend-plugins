@@ -1,0 +1,9 @@
+{
+    "iconUrl":  null,
+    "name":  "OttAggregator",
+    "description":  "OTT Metadata Aggregator: combines metadata from Prime Video, ZEE5, AirtelXstream, AppleTV+ with playable sources from SkyMoviesHD, Vegamovies, Cinevood. Resolves shortened links via HubCloud, GdFlix, and other bypass logic.",
+    "manifestVersion":  1,
+    "pluginLists":  [
+                        "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/ott-aggregator/repo/plugins.json"
+                    ]
+}
