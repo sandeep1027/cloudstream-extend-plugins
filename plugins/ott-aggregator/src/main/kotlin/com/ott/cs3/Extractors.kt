@@ -483,6 +483,10 @@ private suspend fun fromTpead(
         val doc = app.get(url).document
         val baseUrl = OttDomains.baseOf(url)
 
+        // Log page structure for debugging
+        Log.d(TAG, "fromTpead: page title=${doc.title()}")
+        Log.d(TAG, "fromTpead: found ${doc.select("video").size} video tags, ${doc.select("iframe").size} iframes, ${doc.select("source").size} sources")
+
         // Look for video source in the page
         val videoSources = doc.select("source[src], video[src]")
         for (source in videoSources) {
@@ -518,6 +522,8 @@ private suspend fun fromTpead(
 
         // Try to find video URL in scripts
         val scripts = doc.select("script").joinToString("\n")
+        Log.d(TAG, "fromTpead: found ${doc.select("script").size} script tags, total ${scripts.length} chars")
+
         val videoPattern = Regex("""(?:file|source|url|src|video_url|stream_url)\s*[:=]\s*['"]([^'"]+\.(?:m3u8|mp4|mkv))['"]""")
         val match = videoPattern.find(scripts)
         if (match != null) {

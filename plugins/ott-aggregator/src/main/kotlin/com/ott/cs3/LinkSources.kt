@@ -262,6 +262,22 @@ suspend fun extractSkyMoviesHDDownloadLinks(movieUrl: String): List<OttSource> {
         val doc = app.get(movieUrl).document
         val sources = mutableListOf<OttSource>()
 
+        // Check the specific div mentioned by user: /html/body/div[4]/center[2]/div
+        val targetDiv = doc.select("body > div:nth-of-type(4) > center:nth-of-type(2) > div")
+        if (targetDiv.isNotEmpty()) {
+            Log.d(TAG, "extractSkyMoviesHDDownloadLinks: found target div with ${targetDiv.select("a").size} links")
+            targetDiv.select("a").forEach { link ->
+                val href = link.attr("href")
+                val text = link.text()
+                Log.d(TAG, "extractSkyMoviesHDDownloadLinks: target div link: $href (text=$text)")
+            }
+        } else {
+            Log.d(TAG, "extractSkyMoviesHDDownloadLinks: target div not found, trying alternative selectors")
+            // Try alternative selectors
+            val altDiv = doc.select("div:nth-of-type(4) center div, div:nth-of-type(4) > center > div")
+            Log.d(TAG, "extractSkyMoviesHDDownloadLinks: alt selector found ${altDiv.size} divs")
+        }
+
         // Find all download links on the page
         val downloadLinks = doc.select("a[href]")
 
