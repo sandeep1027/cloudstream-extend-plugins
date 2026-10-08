@@ -1,5 +1,6 @@
 package com.bollyflix.cs3
 
+import com.lagradost.api.Log
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.AppUtils.parseJson
 import com.lagradost.cloudstream3.utils.ExtractorLink
@@ -8,6 +9,8 @@ import com.lagradost.cloudstream3.base64Decode
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.supervisorScope
+
+private const val TAG = "Bollyflix"
 
 /**
  * BollyFlix — https://bollyflix.frl (or current domain from domains.json)
@@ -88,10 +91,13 @@ class BollyflixProvider : MainAPI() {
     }
 
     override suspend fun load(url: String): LoadResponse? {
+        Log.d(TAG, "load() called with url: $url")
         val document = app.get(url).document
+        Log.d(TAG, "load() fetched document, size: ${document.html().length}")
         val title = document.selectFirst("title")?.text()?.replace("Download ", "").orEmpty()
         val posterUrl = document.selectFirst("meta[property=og:image]")?.attr("content")
         val description = document.selectFirst("span#summary")?.text()
+        Log.d(TAG, "load() title: $title")
 
         // Detect series vs movie from title or URL.
         val isSeries = title.contains("Series", ignoreCase = true) ||
@@ -160,22 +166,30 @@ class BollyflixProvider : MainAPI() {
             }
         } else {
             // Movie: unlock all mirrors and pass as data.
+            Log.d(TAG, "load() processing as movie")
+            val dlButtons = document.select("a.dl")
+            Log.d(TAG, "load() found ${dlButtons.size} a.dl buttons")
             val data = supervisorScope {
-                document.select("a.dl").map { link ->
+                dlButtons.map { link ->
                     async {
                         try {
                             var decodeUrl = link.attr("href")
+                            Log.d(TAG, "load() button href: $decodeUrl")
                             if (!decodeUrl.contains("fastdlserver")) {
                                 val id = decodeUrl.substringAfterLast("id=")
+                                Log.d(TAG, "load() bypassing id: $id")
                                 decodeUrl = bypass(id)
+                                Log.d(TAG, "load() bypassed to: $decodeUrl")
                             }
                             BollyflixSource(decodeUrl)
                         } catch (e: Exception) {
+                            Log.e(TAG, "load() button failed: ${e.message}")
                             null
                         }
                     }
                 }.awaitAll().filterNotNull()
             }
+            Log.d(TAG, "load() created ${data.size} BollyflixSource entries")
 
             return newMovieLoadResponse(title, url, TvType.Movie, data) {
                 this.posterUrl = posterUrl
@@ -190,8 +204,11 @@ class BollyflixProvider : MainAPI() {
         subtitleCallback: (SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit
     ): Boolean {
+        Log.d(TAG, "loadLinks() called with data length: ${data.length}")
         val sources = parseJson<List<BollyflixSource>>(data)
+        Log.d(TAG, "loadLinks() parsed ${sources.size} sources")
         if (sources.isEmpty()) return false
+        sources.forEachIndexed { i, src -> Log.d(TAG, "loadLinks() source[$i]: ${src.url}") }
         emitBollyflixSources(sources.map { it.url }, subtitleCallback, callback)
         return true
     }

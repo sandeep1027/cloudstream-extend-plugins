@@ -59,16 +59,25 @@ suspend fun emitBollyflixSources(
     // at once hits rate limits on the mirror hosts. Order also matters - the
     // player picks the first usable link, so the site's own button order is
     // preserved.
-    for (url in urls) {
+    Log.d(TAG, "emitBollyflixSources: ${urls.size} URLs to process")
+    for ((i, url) in urls.withIndex()) {
+        Log.d(TAG, "emitBollyflixSources[$i]: $url")
         when {
             url.contains("gdflix", ignoreCase = true) ||
-                url.contains("gdlink", ignoreCase = true) ->
+                url.contains("gdlink", ignoreCase = true) -> {
+                Log.d(TAG, "emitBollyflixSources[$i]: dispatching to GdFlix")
                 GdFlix().getUrl(url, "", subtitleCallback, callback)
+            }
 
-            url.contains("fastdlserver", ignoreCase = true) ->
+            url.contains("fastdlserver", ignoreCase = true) -> {
+                Log.d(TAG, "emitBollyflixSources[$i]: dispatching to FastDlServer")
                 FastDlServer().getUrl(url, "", subtitleCallback, callback)
+            }
 
-            else -> loadExtractor(url, "", subtitleCallback, callback)
+            else -> {
+                Log.d(TAG, "emitBollyflixSources[$i]: dispatching to loadExtractor")
+                loadExtractor(url, "", subtitleCallback, callback)
+            }
         }
     }
 }
@@ -95,13 +104,30 @@ private class FastDlServer : ExtractorApi() {
 }
 
 /**
+ * Fetches the current base URL for a mirror host from a remote JSON map.
+ *
+ * Mirror hosts rotate domains frequently. The hardcoded URL in the code becomes
+ * stale, so the current address is read from a small JSON file at runtime. If the
+ * fetch fails or the key is absent, the original URL is returned unchanged.
+ */
+private suspend fun getLatestBaseUrl(baseUrl: String, source: String): String {
+    return try {
+        val dynamicUrls = app.get("https://raw.githubusercontent.com/SaurabhKaperwan/Utils/refs/heads/main/urls.json")
+            .parsedSafe<Map<String, String>>()
+        dynamicUrls?.get(source)?.takeIf { it.isNotBlank() } ?: baseUrl
+    } catch (e: Exception) {
+        baseUrl
+    }
+}
+
+/**
  * The Google Drive mirror family. The index pages are scraped for their
  * download buttons; the wildcard subclasses below cover the known hostnames
  * without duplicating the extraction.
  */
 private open class GdFlix : ExtractorApi() {
     override val name = "GDFlix"
-    override var mainUrl = "https://gdflix"
+    override val mainUrl = "https://gdflix.*"
     override val requiresReferer = false
 
     override suspend fun getUrl(
@@ -110,13 +136,26 @@ private open class GdFlix : ExtractorApi() {
         subtitleCallback: (com.lagradost.cloudstream3.SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit
     ) {
-        val host = BollyflixDomains.baseOf(url)
-        val document = app.get(url).document
+        Log.d(TAG, "GdFlix.getUrl: $url")
+        var baseUrl = BollyflixDomains.baseOf(url)
+        val latestBaseUrl = getLatestBaseUrl(baseUrl, "gdflix")
+        Log.d(TAG, "GdFlix baseUrl: $baseUrl, latest: $latestBaseUrl")
+
+        var newUrl = url
+        if (baseUrl != latestBaseUrl) {
+            newUrl = url.replace(baseUrl, latestBaseUrl)
+            baseUrl = latestBaseUrl
+            Log.d(TAG, "GdFlix rewritten URL: $newUrl")
+        }
+
+        val document = app.get(newUrl).document
+        Log.d(TAG, "GdFlix fetched document, size: ${document.html().length}")
         val fileName = document.select("ul > li.list-group-item:contains(Name)").text()
             .substringAfter("Name : ").orEmpty().trim()
         val fileSize = document.select("ul > li.list-group-item:contains(Size)").text()
             .substringAfter("Size : ").orEmpty().trim()
         val quality = bollyflixQuality(fileName)
+        Log.d(TAG, "GdFlix fileName: $fileName, fileSize: $fileSize")
 
         suspend fun offer(link: String?, server: String) {
             if (link.isNullOrBlank()) return
@@ -149,7 +188,7 @@ private open class GdFlix : ExtractorApi() {
 
                 text.contains("GD Index", ignoreCase = true) ->
                     for (type in listOf(1, 2)) {
-                        app.get("$host$href?type=$type").document
+                        app.get("$baseUrl$href?type=$type").document
                             .select("a.btn-success").amap {
                                 offer(it.attr("href"), " [CF]")
                             }
@@ -157,7 +196,7 @@ private open class GdFlix : ExtractorApi() {
 
                 text.contains("FAST", ignoreCase = true) ->
                     offer(
-                        app.get(host + href).document.select("div.card-body a").attr("href"),
+                        app.get(baseUrl + href).document.select("div.card-body a").attr("href"),
                         " [Fast]"
                     )
 
@@ -186,14 +225,6 @@ private open class GdFlix : ExtractorApi() {
             }
         }
     }
-}
-
-private class GdFlixLive : GdFlix() {
-    override var mainUrl = "https://new4.gdflix.io"
-}
-
-private class GdFlixMirror : GdFlix() {
-    override var mainUrl = "https://gdlink"
 }
 
 /** The known GdFlix hostnames, so one case covers a rotated mirror. */
