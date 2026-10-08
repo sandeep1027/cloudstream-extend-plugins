@@ -175,11 +175,14 @@ class BollyflixProvider : MainAPI() {
                         try {
                             var decodeUrl = link.attr("href")
                             Log.d(TAG, "load() button href: $decodeUrl")
-                            if (!decodeUrl.contains("fastdlserver")) {
+                            // Only bypass if the URL has ?id= (sidexfee redirector)
+                            if (!decodeUrl.contains("fastdlserver") && decodeUrl.contains("?id=")) {
                                 val id = decodeUrl.substringAfterLast("id=")
                                 Log.d(TAG, "load() bypassing id: $id")
                                 decodeUrl = bypass(id)
                                 Log.d(TAG, "load() bypassed to: $decodeUrl")
+                            } else {
+                                Log.d(TAG, "load() using direct URL (no bypass needed)")
                             }
                             BollyflixSource(decodeUrl)
                         } catch (e: Exception) {

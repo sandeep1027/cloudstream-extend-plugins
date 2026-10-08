@@ -74,6 +74,11 @@ suspend fun emitBollyflixSources(
                 FastDlServer().getUrl(url, "", subtitleCallback, callback)
             }
 
+            url.contains("linksmod", ignoreCase = true) -> {
+                Log.d(TAG, "emitBollyflixSources[$i]: dispatching to LinksMod")
+                LinksMod().getUrl(url, "", subtitleCallback, callback)
+            }
+
             else -> {
                 Log.d(TAG, "emitBollyflixSources[$i]: dispatching to loadExtractor")
                 loadExtractor(url, "", subtitleCallback, callback)
@@ -98,8 +103,62 @@ private class FastDlServer : ExtractorApi() {
         subtitleCallback: (com.lagradost.cloudstream3.SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit
     ) {
-        val location = app.get(url, allowRedirects = false).headers["location"] ?: return
-        loadExtractor(location, referer, subtitleCallback, callback)
+        Log.d(TAG, "FastDlServer.getUrl: $url")
+        val response = app.get(url, allowRedirects = false)
+        Log.d(TAG, "FastDlServer status: ${response.code}, headers: ${response.headers}")
+        val location = response.headers["location"]
+        Log.d(TAG, "FastDlServer location: $location")
+        if (location != null) {
+            loadExtractor(location, referer, subtitleCallback, callback)
+        } else {
+            Log.w(TAG, "FastDlServer: no location header found")
+        }
+    }
+}
+
+/**
+ * LinksMod redirector: the page loads and then redirects to the actual file host
+ * via a JavaScript redirect or meta refresh. We fetch the page and extract the
+ * redirect URL from the HTML.
+ */
+private class LinksMod : ExtractorApi() {
+    override val name = "LinksMod"
+    override var mainUrl = "https://linksmod.top"
+    override val requiresReferer = false
+
+    override suspend fun getUrl(
+        url: String,
+        referer: String?,
+        subtitleCallback: (com.lagradost.cloudstream3.SubtitleFile) -> Unit,
+        callback: (ExtractorLink) -> Unit
+    ) {
+        Log.d(TAG, "LinksMod.getUrl: $url")
+        try {
+            val document = app.get(url).document
+            Log.d(TAG, "LinksMod fetched document, size: ${document.html().length}")
+            // Look for redirect URL in meta refresh or JavaScript
+            val metaRefresh = document.select("meta[http-equiv=refresh]").attr("content")
+            Log.d(TAG, "LinksMod meta refresh: $metaRefresh")
+            if (metaRefresh.contains("url=")) {
+                val redirectUrl = metaRefresh.substringAfter("url=").trim()
+                Log.d(TAG, "LinksMod redirect: $redirectUrl")
+                loadExtractor(redirectUrl, referer, subtitleCallback, callback)
+                return
+            }
+            // Try to find link in script tags
+            val scripts = document.select("script").joinToString("\n")
+            val urlPattern = Regex("""(?:window\.location|location\.href)\s*=\s*['"]([^'"]+)['"]""")
+            val match = urlPattern.find(scripts)
+            if (match != null) {
+                val redirectUrl = match.groupValues[1]
+                Log.d(TAG, "LinksMod JS redirect: $redirectUrl")
+                loadExtractor(redirectUrl, referer, subtitleCallback, callback)
+                return
+            }
+            Log.w(TAG, "LinksMod: no redirect found")
+        } catch (e: Exception) {
+            Log.e(TAG, "LinksMod failed: ${e.message}")
+        }
     }
 }
 
