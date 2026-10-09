@@ -15,7 +15,7 @@ Settings → Extensions → Add repository.
 Add this single URL to get access to all plugins. You can then pick which ones to install:
 
 ```
-https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/repo/plugins.json
+https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/repo/repository.json
 ```
 
 Settings → Extensions → Add repository, paste the URL above, and you'll see all 11 plugins available. Install only the ones you want.
