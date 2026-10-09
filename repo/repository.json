@@ -1,0 +1,9 @@
+{
+    "iconUrl": null,
+    "name": "CloudStream Extend Plugins",
+    "description": "All plugins: HiAnime, AniKoto, AnimeCube, HDHub4u, BollyFlix, OttAggregator, YTS, Torrin, Prowlarr, and more. Pick the ones you want to install.",
+    "manifestVersion": 1,
+    "pluginLists": [
+        "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/repo/plugins.json"
+    ]
+}
