@@ -1,0 +1,235 @@
+[
+  {
+    "url": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/anikoto/repo/AniKoto.cs3",
+    "status": 1,
+    "version": "7",
+    "apiVersion": 1,
+    "name": "AniKoto",
+    "internalName": "AniKoto",
+    "authors": [
+      "Spyou",
+      "rootx"
+    ],
+    "description": "AniKoto (anikototv.to) anime source. Discovery via /filter and /home, detail and episodes from the ajax endpoints, streams resolved through the site's server chain including MegaPlay's AES-encrypted sources, with subtitle tracks.",
+    "repositoryUrl": null,
+    "tvTypes": [
+      "Anime",
+      "OVA"
+    ],
+    "language": "en",
+    "iconUrl": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/anikoto/repo/icon.png",
+    "fileSize": "44302",
+    "fileHash": "sha256-1a9320e1935ceebf5ea2b929d1b4abb7c6cfc720e9823c5d8bcc2b752c4b89f2"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/animecube/repo/AnimeCube.cs3",
+    "status": 1,
+    "version": "7",
+    "apiVersion": 1,
+    "name": "AnimeCube",
+    "internalName": "AnimeCube",
+    "authors": [
+      "Spyou",
+      "rootx"
+    ],
+    "description": "AnimeCube (animecube.live) anime source. Listings and episodes read from the site's Next.js payload; streams from the site's sources endpoint, with Dailymotion and Rumble playlists expanded into direct HLS/MP4 links.",
+    "repositoryUrl": null,
+    "tvTypes": [
+      "Anime"
+    ],
+    "language": "zh",
+    "iconUrl": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/animecube/repo/icon.png",
+    "fileSize": "43577",
+    "fileHash": "sha256-9f0f31602fdeff292bad416891a3fd8eb3836e4a9c2a162fb016d8e81e0123b9"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/bollyflix/repo/BollyFlix.cs3",
+    "status": 1,
+    "version": "18",
+    "apiVersion": 1,
+    "name": "BollyFlix",
+    "internalName": "BollyFlix",
+    "authors": [
+      "Spyou",
+      "rootx"
+    ],
+    "description": "BollyFlix (new.bollyflix.vote) catalogue: Bollywood, Hollywood, dual-audio, Hindi-dubbed and Korean movies and web series, with the per-title quality table (480p/720p/1080p/2160p with sizes). Streams directly from the site's own mirrors — no torrent index, no debrid account needed.",
+    "repositoryUrl": null,
+    "tvTypes": [
+      "Movie",
+      "TvSeries"
+    ],
+    "language": "en",
+    "iconUrl": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/bollyflix/repo/icon.png",
+    "fileSize": "36678",
+    "fileHash": "sha256-89764b8d4cc13e2b23c741cdbae7d8e110d2c518dfe0260d257126645bdf8273"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/hdhub4u/repo/HDHub4u.cs3",
+    "status": 1,
+    "version": "7",
+    "apiVersion": 1,
+    "name": "HDHub4u",
+    "internalName": "HDHub4u",
+    "authors": [
+      "Spyou",
+      "rootx"
+    ],
+    "description": "HDHub4u movies and series source (Hindi/Hollywood). Search, detail with episodes, and stream extraction through the site's shortener/link-bypass hops into direct m3u8/MP4 links.",
+    "repositoryUrl": null,
+    "tvTypes": [
+      "Movie",
+      "TvSeries"
+    ],
+    "language": "en",
+    "iconUrl": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/hdhub4u/repo/icon.png",
+    "fileSize": "67575",
+    "fileHash": "sha256-d2b9e4adfe994852f185f2dedb181cf877b99088a8f074fc415a30e106a751cb"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/hianime/repo/HiAnime.cs3",
+    "status": 1,
+    "version": "7",
+    "apiVersion": 1,
+    "name": "HiAnime",
+    "internalName": "HiAnime",
+    "authors": [
+      "Spyou",
+      "rootx"
+    ],
+    "description": "HiAnime (hianime.at) anime source. Server-rendered search, home rows and detail with sub & dub episode lists; resolves VidPlay/MegaPlay getSources and Zoko's XOR'd player blob into m3u8/MP4 links with subtitles.",
+    "repositoryUrl": null,
+    "tvTypes": [
+      "Anime"
+    ],
+    "language": "en",
+    "iconUrl": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/hianime/repo/icon.png",
+    "fileSize": "42242",
+    "fileHash": "sha256-cea253db46e3dccfbe3183cba871bcbc2bc3c5c37761890adbd5dbf4068a3586"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/ott-aggregator/repo/OttAggregator.cs3",
+    "status": 1,
+    "version": 1,
+    "apiVersion": 1,
+    "name": "OttAggregator",
+    "internalName": "OttAggregator",
+    "authors": [
+      "sandeep1027"
+    ],
+    "description": "OTT Metadata Aggregator: combines metadata from Prime Video, ZEE5, AirtelXstream, AppleTV+ with playable sources from SkyMoviesHD, Vegamovies, Cinevood. Resolves shortened links via HubCloud, GdFlix, and other bypass logic.",
+    "repositoryUrl": null,
+    "tvTypes": [
+      "Movie",
+      "TvSeries"
+    ],
+    "language": "hi",
+    "iconUrl": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/ott-aggregator/repo/icon.png",
+    "fileSize": "49627",
+    "fileHash": "sha256-91a5c929d9fd41cbe17a71d11966f8785e8fad42714365ea7c14bdea2d8972f0"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/prowlarr/repo/Prowlarr.cs3",
+    "status": 1,
+    "version": "7",
+    "apiVersion": 1,
+    "name": "Prowlarr",
+    "internalName": "Prowlarr",
+    "authors": [
+      "rootx"
+    ],
+    "description": "Movies from your own Prowlarr instance, searched across every indexer you have configured there. Add the address and API key under Settings > Player > Prowlarr, and playback resolves through your Torrin / TorBox / Real-Debrid account. Every link is a magnet rebuilt from the torrent hash, so your Prowlarr key is never handed to a debrid service.",
+    "repositoryUrl": null,
+    "tvTypes": [
+      "Movie"
+    ],
+    "language": "all",
+    "iconUrl": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/prowlarr/repo/icon.png",
+    "fileSize": "17896",
+    "fileHash": "sha256-80b8f655fedab3dd1359011bbb5af76a02636f33129956e167e98de4e9801593"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/torrin/repo/Torrin.cs3",
+    "status": 1,
+    "version": "16",
+    "apiVersion": 1,
+    "name": "Torrin",
+    "internalName": "Torrin",
+    "authors": [
+      "rootx"
+    ],
+    "description": "Curated dashboard + latest releases from Netflix, Hotstar, ZEE5 & SonyLIV (TMDB, region IN). Resolves any title to torrents (Torrentio) and streams them through your Torrin debrid. Enable Torrin in Settings > Player first.",
+    "repositoryUrl": null,
+    "tvTypes": [
+      "Movie",
+      "TvSeries"
+    ],
+    "language": "en",
+    "iconUrl": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/torrin/repo/icon.png",
+    "fileSize": "56959",
+    "fileHash": "sha256-47502363958a691b5995ee0ac075bf50e4a1661ffb8d1562c125e5a7383132a6"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/torrin-mdblist/repo/TorrinMDBList.cs3",
+    "status": 1,
+    "version": "7",
+    "apiVersion": 1,
+    "name": "Torrin MDBList",
+    "internalName": "Torrin MDBList",
+    "authors": [
+      "rootx"
+    ],
+    "description": "Latest movies & shows from the MDBList catalog (your free API key, Settings > Player > Metadata) plus curated trending rows. Streams via Torrin and TorBox debrid Ã¢â‚¬â€ pick the debrid per link.",
+    "repositoryUrl": null,
+    "tvTypes": [
+      "Movie",
+      "TvSeries"
+    ],
+    "language": "en",
+    "iconUrl": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/torrin-mdblist/repo/icon.png",
+    "fileSize": "57662",
+    "fileHash": "sha256-4a5e2002aa4bbdd501c101ee35413c3dfeef99f9196de79e99bc5c1805d4f53a"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/torrin-trakt/repo/TorrinTrakt.cs3",
+    "status": 1,
+    "version": "8",
+    "apiVersion": 1,
+    "name": "Torrin Trakt",
+    "internalName": "Torrin Trakt",
+    "authors": [
+      "rootx"
+    ],
+    "description": "Latest movies & this-week episodes from the Trakt calendar (free client id, Settings > Player > Metadata) plus curated trending rows. Streams via Torrin and TorBox debrid ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â pick the debrid per link.",
+    "repositoryUrl": null,
+    "tvTypes": [
+      "Movie",
+      "TvSeries"
+    ],
+    "language": "en",
+    "iconUrl": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/torrin-trakt/repo/icon.png",
+    "fileSize": "55594",
+    "fileHash": "sha256-1ad6db8d5e0817f0576871c7653f90a30f0bd3e977fe9be8abf9a745e77334bb"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/yts/repo/YTS.cs3",
+    "status": 1,
+    "version": "9",
+    "apiVersion": 1,
+    "name": "YTS",
+    "internalName": "YTS",
+    "authors": [
+      "rootx"
+    ],
+    "description": "YTS movies and TV shows with full quality tiers (720p / 1080p / 2160p), seeders and sizes. Every link is a magnet, so playback is resolved through your Torrin / TorBox / Real-Debrid account (Settings > Player > Debrid). Sites in this family move domains often, so this plugin is standalone and can be pointed at a new mirror without touching the others.",
+    "repositoryUrl": null,
+    "tvTypes": [
+      "Movie",
+      "TvSeries"
+    ],
+    "language": "en",
+    "iconUrl": "https://raw.githubusercontent.com/sandeep1027/cloudstream-extend-plugins/main/plugins/yts/repo/icon.png",
+    "fileSize": "59496",
+    "fileHash": "sha256-f9a2fe16fa3dfa9e2d6bde23979335eba15ff91c5acc0acc1eeaabd5cb19dfa5"
+  }
+]
